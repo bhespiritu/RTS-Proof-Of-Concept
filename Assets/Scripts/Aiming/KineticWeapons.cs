@@ -15,12 +15,14 @@ public class KineticWeapons : MonoBehaviour
         mobileTargetBody = mobileTarget.GetComponent<Rigidbody>();
     }
 
+    //Helper method to determine the angle of fire
     float angleOfFire(float heightdiff, float distance, float aggregateVal)
     {
         return (Mathf.Acos(((2 * aggregateVal) - heightdiff) / Mathf.Sqrt(Mathf.Pow(heightdiff, 2) + Mathf.Pow(distance, 2))) + Mathf.Atan2(distance, heightdiff)) / 2;
     }
 
-    Vector3 maximumMobileTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
+    //Calculates the maximum path the projectile could take
+    Vector3 maximumTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
     {
         float grav = 9.8f;
         float projVelo = 20.0f;
@@ -44,7 +46,35 @@ public class KineticWeapons : MonoBehaviour
         return diff1;
     }
 
-    Vector3 minimumMobileTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
+    Vector3 maximumTrajectory(Vector3 v1, Vector3 v2)
+    {
+        return maximumTrajectory(v1, v2, Vector3.zero);
+    }
+
+    //Leaving the static solution in, in case it is relevant
+   /* Vector3 maximumStaticTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
+    {
+        float grav = 9.8f;
+        float projVelo = 20.0f;
+        Vector3 diff = v2 + targetVelocity - v1;
+        float h = -diff.y;
+        diff.y = 0;
+        float d = diff.magnitude;
+        float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
+        float theta = angleOfFire(h, d, a);
+        diff = diff.normalized;
+        diff = diff * projVelo * Mathf.Cos(theta);
+        diff.y = projVelo * Mathf.Sin(theta);
+        return diff;
+    }
+
+    Vector3 maximumStaticTrajectory(Vector3 v1, Vector3 v2)
+    {
+        return maximumTrajectory(v1, v2, Vector3.zero);
+    }*/
+
+    //Calculates the minimum path of the projectile could take
+    Vector3 minimumTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
     {
         float grav = 9.8f;
         float projVelo = 20.0f;
@@ -61,37 +91,9 @@ public class KineticWeapons : MonoBehaviour
         return diff;
     }
 
-    Vector3 maximumStaticTrajectory(Vector3 v1, Vector3 v2)
+    Vector3 minimumTrajectory(Vector3 v1, Vector3 v2)
     {
-        float grav = 9.8f;
-        float projVelo = 20.0f;
-        Vector3 diff = v2 - v1;
-        float h = -diff.y;
-        diff.y = 0;
-        float d = diff.magnitude;
-        float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
-        float theta = angleOfFire(h, d, a);
-        theta = (Mathf.PI / 2) - theta - Mathf.Sin(h/d);
-        diff = diff.normalized;
-        diff = diff * projVelo * Mathf.Cos(theta);
-        diff.y = projVelo * Mathf.Sin(theta);
-        return diff;
-    }
-
-    Vector3 minimumStaticTrajectory(Vector3 v1, Vector3 v2)
-    {
-        float grav = 9.8f;
-        float projVelo = 20.0f;
-        Vector3 diff = v2 - v1;
-        float h = -diff.y;
-        diff.y = 0;
-        float d = diff.magnitude;
-        float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
-        float theta = angleOfFire(h, d, a);
-        diff = diff.normalized;
-        diff = diff * projVelo * Mathf.Cos(theta);
-        diff.y = projVelo * Mathf.Sin(theta);
-        return diff;
+        return minimumTrajectory(v1, v2, Vector3.zero);
     }
 
     // Update is called once per frame
@@ -102,10 +104,10 @@ public class KineticWeapons : MonoBehaviour
         Vector3 vt = mobileTarget.transform.position;
         Vector3 v2_2 = mobileTarget.transform.position;
         Vector3 v2_2_2 = v2_2 + mobileTargetBody.velocity;
-        Vector3 v3 = maximumStaticTrajectory(v1, v2);
-        Vector3 v4 = minimumStaticTrajectory(v1, v2);
-        Vector3 v5 = minimumMobileTrajectory(v1, vt, mobileTargetBody.velocity);
-        Vector3 v6 = maximumMobileTrajectory(v1, vt, mobileTargetBody.velocity);
+        Vector3 v3 = maximumTrajectory(v1, v2);
+        Vector3 v4 = minimumTrajectory(v1, v2);
+        Vector3 v5 = minimumTrajectory(v1, vt, mobileTargetBody.velocity);
+        Vector3 v6 = maximumTrajectory(v1, vt, mobileTargetBody.velocity);
         Vector3 diff = v2 - v1;
         Vector3 diff2 = v2_2 - v1;
         Vector3 diff3 = v2_2_2 - v1;

@@ -19,7 +19,7 @@ public class GiveVelocity : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 v1 = new Vector3(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+        Vector3 v1 = new Vector3(Random.Range(-3, 3), Random.Range(-3, 3), Random.Range(-3, 3));
         if (Input.GetMouseButtonDown(1))
         {
             Rigidbody r = GetComponent<Rigidbody>();
