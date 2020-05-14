@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    
+    public int mapSize = 25;//PLACEHOLDER VALUE
 
 
 }
