@@ -17,11 +17,11 @@ public class LeadingAgent : MonoBehaviour
     }
 
 
-    private float dumbass = 0;
     // Update is called once per frame
     void FixedUpdate()
     {
         Vector3 targetDirection = debugMarker.transform.position - transform.position;
+        targetDirection.y = 0;
         float currentAngle = Vector3.SignedAngle(transform.forward, targetDirection,Vector3.up);
         if (Mathf.Abs(currentAngle) >= turningSpeed * Time.fixedDeltaTime)
         {
