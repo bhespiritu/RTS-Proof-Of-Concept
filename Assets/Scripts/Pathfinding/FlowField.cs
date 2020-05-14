@@ -18,7 +18,7 @@ public class FlowField : MonoBehaviour
     int targetX, targetY;
 
 
-    FlowGrid testGrid;
+    public static FlowGrid testGrid;
 
     public void Start()
     {
@@ -31,7 +31,7 @@ public class FlowField : MonoBehaviour
         {
             for (int j = 0; j < FlowGrid.gridResolution; j++)
             {
-                if (i > 5 && j == 5)
+                if ((i > 5 || i < 3) && (j > 3 && j < 9))
                 {
                     testGrid.costField[i, j] = 2048;
                 }
@@ -61,7 +61,7 @@ public class FlowField : MonoBehaviour
             for (int j = 0; j < FlowGrid.gridResolution; j++)
             {
                 Vector3 position = new Vector3(i + 0.5f, 0, j + 0.5f);
-                //Handles.Label(position, testGrid.costField[i, j] + "");
+                Handles.Label(position, testGrid.costField[i, j] + "");
                 //Handles.Label(position + Vector3.right/4, testGrid.integrationField[i, j] + "");
             }
         }

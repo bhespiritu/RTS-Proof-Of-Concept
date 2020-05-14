@@ -22,12 +22,8 @@ public class PathfindingManager : MonoBehaviour
 
     public void FixedUpdate()
     {
-        Vector3 cyclePosition = Vector3.zero;
-        cyclePosition.x = 10 * Mathf.Sin(Time.time);
-        cyclePosition.z = 10 * Mathf.Cos(Time.time);
-        debugObject.transform.position = cyclePosition;
 
-        debugGroup.targetPosition = debugObject.transform.position;
+        debugGroup.targetPosition = Vector3.one*10;
         UpdateGroupMovement(debugGroup);
     }
 
@@ -82,7 +78,8 @@ public class UnitGroup
     public Vector3 desiredUnitDirection(int i)
     {
         Unit u = associatedUnits[i];
-        return (targetPosition - u.transform.position).normalized;
+        Vector3 pos = u.transform.position;
+        return FlowGrid.GetDirection(FlowField.testGrid.directionField[(int)pos.x, (int)pos.z]);
     }
 
     public Vector3 groupPosition;
