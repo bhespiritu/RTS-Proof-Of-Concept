@@ -11,6 +11,11 @@ public class GiveVelocity : MonoBehaviour
         
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Collision!");
+    }
+
     // Update is called once per frame
     void Update()
     {
