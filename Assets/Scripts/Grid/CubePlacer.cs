@@ -37,15 +37,18 @@ public class CubePlacer : MonoBehaviour
     }
 
     private void Update(){
-
-        
-
         RaycastHit hitInfo;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+        Vector3 localUp = cursor.transform.up;
+        Vector3 localForward = cursor.transform.forward;
+
         if (Physics.Raycast(ray, out hitInfo,Mathf.Infinity,placementLayerMask))
         {
-            cursor.transform.position = hitInfo.point;
+            
+            cursor.transform.position = grid.getGridPoint(hitInfo.point);
+            localUp = hitInfo.normal;
+            cursor.transform.position += hitInfo.normal * 0.5f;
             mesh.material = placeable;
             foreach (Transform child in cursor.transform)
             {
@@ -55,10 +58,21 @@ public class CubePlacer : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.A)){
+            Vector3 temp = cursor.transform.forward;
+
+            temp.x = -cursor.transform.forward.z;
+            temp.z = cursor.transform.forward.x;
+            localForward = temp;
+
+        }
+
+        cursor.transform.LookAt(cursor.transform.position + localForward, localUp);
+
         if (Input.GetMouseButtonDown(0)){
             
             if(Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask)){
-                PlaceCubeNear(hitInfo.point);
+                PlaceCubeNear();
             }
         }
         
@@ -66,13 +80,10 @@ public class CubePlacer : MonoBehaviour
     }
 
     
-    private void PlaceCubeNear(Vector3 clickPoint){
-        var finalPosition = grid.getGridPoint(clickPoint);
-        RaycastHit hitInfo;
+    private void PlaceCubeNear(){
+        
         GameObject cube = GameObject.Instantiate(buildingPrefab);
-        cube.transform.position = finalPosition;
-        Physics.Raycast(cube.transform.position + 10*Vector3.up, Vector3.down, out hitInfo);
-        cube.transform.up = hitInfo.normal;
-        cube.transform.position +=  hitInfo.normal * 0.5f; 
+        cube.transform.position = cursor.transform.position;
+        cube.transform.rotation = cursor.transform.rotation;
     }
 }
