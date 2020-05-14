@@ -26,7 +26,7 @@ public class LaserWeapons : MonoBehaviour
         Vector3 v1 = transform.position;
         Vector3 v2 = target.transform.position;
         Vector3 v4 = trajectory(v1, v2);
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(2))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();

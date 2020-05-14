@@ -5,11 +5,19 @@ using UnityEngine;
 public class KineticWeapons : MonoBehaviour
 {
     // Fields
-    public GameObject target;
+    public GameObject staticTarget;
     public GameObject bullet;
+    public GameObject mobileTarget;
+    public Rigidbody mobileTargetBody;
     // Start is called before the first frame update
     void Start()
     {
+        mobileTargetBody = mobileTarget.GetComponent<Rigidbody>();
+    }
+
+    float angleOfFire(float heightdiff, float distance, float aggregateVal)
+    {
+        return (Mathf.Acos(((2 * aggregateVal) - heightdiff) / Mathf.Sqrt(Mathf.Pow(heightdiff, 2) + Mathf.Pow(distance, 2))) + Mathf.Atan2(distance, heightdiff)) / 2;
     }
 
     Vector3 maximumMobileTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
@@ -21,7 +29,32 @@ public class KineticWeapons : MonoBehaviour
         diff.y = 0;
         float d = diff.magnitude;
         float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
-        float theta = (Mathf.Acos(((2 * a) - h) / Mathf.Sqrt(Mathf.Pow(h, 2) + Mathf.Pow(d, 2))) + Mathf.Atan2(d, h)) / 2;
+        float theta = angleOfFire(h, d, a);
+        float time = d / (projVelo * Mathf.Cos(theta));
+        Vector3 v3 = v2 + (targetVelocity * time);
+        Vector3 diff1 = v3 - v1;
+        float h1 = -diff1.y;
+        diff1.y = 0;
+        float d1 = diff1.magnitude;
+        float a1 = (grav * Mathf.Pow(d1, 2)) / (2 * Mathf.Pow(projVelo, 2));
+        float theta1 = angleOfFire(h1, d1, a1);
+        diff1 = diff1.normalized;
+        diff1 = diff1 * projVelo * Mathf.Cos(theta1);
+        diff1.y = projVelo * Mathf.Sin(theta1);
+        return diff1;
+    }
+
+    Vector3 minimumMobileTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
+    {
+        float grav = 9.8f;
+        float projVelo = 20.0f;
+        Vector3 diff = v2 + targetVelocity - v1;
+        float h = -diff.y;
+        diff.y = 0;
+        float d = diff.magnitude;
+        float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
+        float theta = angleOfFire(h, d, a);
+        theta = (Mathf.PI / 2) - theta - Mathf.Sin(h / d);
         diff = diff.normalized;
         diff = diff * projVelo * Mathf.Cos(theta);
         diff.y = projVelo * Mathf.Sin(theta);
@@ -37,7 +70,7 @@ public class KineticWeapons : MonoBehaviour
         diff.y = 0;
         float d = diff.magnitude;
         float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
-        float theta = (Mathf.Acos(((2 * a) - h) / Mathf.Sqrt(Mathf.Pow(h, 2) + Mathf.Pow(d, 2))) + Mathf.Atan2(d, h))/2;
+        float theta = angleOfFire(h, d, a);
         theta = (Mathf.PI / 2) - theta - Mathf.Sin(h/d);
         diff = diff.normalized;
         diff = diff * projVelo * Mathf.Cos(theta);
@@ -54,8 +87,7 @@ public class KineticWeapons : MonoBehaviour
         diff.y = 0;
         float d = diff.magnitude;
         float a = (grav * Mathf.Pow(d, 2)) / (2 * Mathf.Pow(projVelo, 2));
-        float theta = (Mathf.Acos(((2 * a) - h) / Mathf.Sqrt(Mathf.Pow(h, 2) + Mathf.Pow(d, 2))) + Mathf.Atan2(d, h)) / 2;
-        //theta = (Mathf.PI / 2) - theta + Mathf.Atan2(d, h);
+        float theta = angleOfFire(h, d, a);
         diff = diff.normalized;
         diff = diff * projVelo * Mathf.Cos(theta);
         diff.y = projVelo * Mathf.Sin(theta);
@@ -66,13 +98,24 @@ public class KineticWeapons : MonoBehaviour
     void Update()
     {
         Vector3 v1 = transform.position;
-        Vector3 v2 = target.transform.position;
+        Vector3 v2 = staticTarget.transform.position;
+        Vector3 vt = mobileTarget.transform.position;
+        Vector3 v2_2 = mobileTarget.transform.position;
+        Vector3 v2_2_2 = v2_2 + mobileTargetBody.velocity;
         Vector3 v3 = maximumStaticTrajectory(v1, v2);
         Vector3 v4 = minimumStaticTrajectory(v1, v2);
+        Vector3 v5 = minimumMobileTrajectory(v1, vt, mobileTargetBody.velocity);
+        Vector3 v6 = maximumMobileTrajectory(v1, vt, mobileTargetBody.velocity);
         Vector3 diff = v2 - v1;
-        Debug.DrawRay(transform.position, diff, Color.blue);
+        Vector3 diff2 = v2_2 - v1;
+        Vector3 diff3 = v2_2_2 - v1;
+        Debug.DrawRay(transform.position, diff, Color.magenta);
+        Debug.DrawRay(transform.position, diff2, Color.cyan);
+        Debug.DrawRay(transform.position, diff3, Color.blue);
         Debug.DrawRay(transform.position, 5 * v4.normalized, Color.green);
         Debug.DrawRay(transform.position, 5 * v3.normalized, Color.red);
+        Debug.DrawRay(transform.position, 5 * v5.normalized, Color.yellow);
+        Debug.DrawRay(transform.position, 5 * v6.normalized, Color.black);
         if (Input.GetMouseButtonDown(0))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
@@ -84,6 +127,18 @@ public class KineticWeapons : MonoBehaviour
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();
             r.velocity = v3;
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
+            Rigidbody r = instance.GetComponent<Rigidbody>();
+            r.velocity = v5;
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
+            Rigidbody r = instance.GetComponent<Rigidbody>();
+            r.velocity = v6;
         }
     }
 }
