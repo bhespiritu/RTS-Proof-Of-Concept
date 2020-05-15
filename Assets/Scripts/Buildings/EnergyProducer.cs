@@ -7,6 +7,7 @@ public class EnergyProducer : MonoBehaviour
 {
     private int eps = 15;
     private int bld = 4;
+    private SortedSet<int> placeable = new SortedSet<int> { -1 };
     //Buff is the number of buffing buildings
     private int buff = 0;
     BuildingPlacer buildPlacer;
@@ -16,7 +17,7 @@ public class EnergyProducer : MonoBehaviour
     void Start()
     {
         buildPlacer = FindObjectOfType<BuildingPlacer>();
-        grid = buildPlacer.GetComponent<GridR>();        
+        grid = buildPlacer.getGrid();        
     }
 
     public void place()
@@ -73,5 +74,9 @@ public class EnergyProducer : MonoBehaviour
     public int production()
     {
         return eps + buff;
+    }
+    public SortedSet<int> getValidFoundation()
+    {
+        return placeable;
     }
 }

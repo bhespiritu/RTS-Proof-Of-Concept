@@ -15,6 +15,9 @@ public class GridR : MonoBehaviour
     [SerializeField]
     private float spacing = 10f;
 
+    private int mapSizeX = 1000;
+    private int mapSizeY = 1000;
+
     private int[,] bldSpots = new int[1000,1000];
 
     private void Awake()
@@ -40,12 +43,20 @@ public class GridR : MonoBehaviour
 
    public int getBuilding(float x, float y)
     {
+        if (x >= mapSizeX || x < 0 || y >= mapSizeY || y < 0)
+        {
+            return 0;
+        }
         return bldSpots[(int)x, (int)y];
     }
 
 
     public void updateBuilding(float x, float y, int bld)
     {
+        if (x >= mapSizeX || x < 0 || y >= mapSizeY || y < 0)
+        {
+            return;
+        }
         bldSpots[(int)x, (int)y] = bld;
     }
 

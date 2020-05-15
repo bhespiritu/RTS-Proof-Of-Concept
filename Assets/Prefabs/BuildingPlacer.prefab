@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 906172997742694339}
   - component: {fileID: 906172997742694336}
-  - component: {fileID: 906172997742694337}
   - component: {fileID: 906172997742694338}
   m_Layer: 0
   m_Name: BuildingPlacer
@@ -45,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60aa26e430e44944a6bbef83595b768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grid: {fileID: 0}
   placeable: {fileID: 2100000, guid: 8592daa5b7d6faa4484964c2dc6bfeea, type: 2}
   unplaceable: {fileID: 2100000, guid: 3b64bf7293d6d7e4ab2f0b7e21956a94, type: 2}
   cursor: {fileID: 0}
@@ -54,25 +54,6 @@ MonoBehaviour:
   buildingsLayerMask:
     serializedVersion: 2
     m_Bits: 512
---- !u!114 &906172997742694337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906172997742694342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f6f29ac85f537b4794d6f728e61127a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  placementLayerMask:
-    serializedVersion: 2
-    m_Bits: 567
-  buildingsLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
-  spacing: 10
 --- !u!114 &906172997742694338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,4 +68,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buildingPrefab: {fileID: 511142575703040892, guid: e1c05a43a16a5b042be47e146a862960,
     type: 3}
-  bld: 4
+  buildingPrefab1: {fileID: 0}
+  buildingPrefab2: {fileID: 0}
+  buildingPrefab3: {fileID: 0}
+  bldInt: 1

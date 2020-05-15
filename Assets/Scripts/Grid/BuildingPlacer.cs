@@ -150,25 +150,49 @@ public class BuildingPlacer : MonoBehaviour
             childMesh.material = placeable;
         }
     }
+
+    public GridR getGrid()
+    {
+        return grid;
+    }
     private bool checkPosition()
     {
         //plus 5 comes from the offset
         int bldType = grid.getBuilding(cursor.transform.position.x, cursor.transform.position.z);
-        if (bldType == -1)
+        SortedSet<int> validTypes = getValidFoundations();
+        Debug.Log("The sorted set is: " + validTypes);
+        Debug.Log("bldtype is: " + bldType);
+        Debug.Log("bldtype in valid types: " + validTypes.Contains(bldType));
+        if (validTypes.Contains(bldType))
         {
             
             foreach (Transform child in cursor.transform)
             {
-                //plus 5 comes from the offset
-                if (grid.getBuilding(child.position.x, child.position.z) != bldType)
+                if (!validTypes.Contains(grid.getBuilding(child.position.x, child.position.z)))
                 {
                     return false;
                 }
             }
         }
-        else if (bldType >= 1) { return false; }
         else { return false; }
         return true;
+    }
+
+    private SortedSet<int> getValidFoundations()
+    {
+        if (cursor.TryGetComponent<EnergyProducer>(out EnergyProducer energy))
+        {
+            return energy.getValidFoundation();
+        }
+        if (cursor.TryGetComponent<Pylon>(out Pylon pylon))
+        {
+            return pylon.getValidFoundation();
+        }
+        if (cursor.TryGetComponent<Producer>(out Producer producer))
+        {
+            return producer.getValidFoundation();
+        }
+        return new SortedSet<int> { };
     }
     
     private void PlaceBuildingNear(){
@@ -179,7 +203,7 @@ public class BuildingPlacer : MonoBehaviour
         build.transform.rotation = cursor.transform.rotation;
 
         //update the grid
-        grid.updateBuilding(build.transform.position.x, build.transform.position.z, 3);
+        grid.updateBuilding(build.transform.position.x, build.transform.position.z, building.getBldType());
         foreach (Transform child in cursor.transform)
         {
             grid.updateBuilding(child.position.x, child.position.z, building.getBldType());
