@@ -78,7 +78,7 @@ public class KineticWeapons : MonoBehaviour
     {
         float grav = 9.8f;
         float projVelo = 20.0f;
-        Vector3 diff = v2 + targetVelocity - v1;
+        Vector3 diff = v2 + (targetVelocity * ((v2 - v1).magnitude / projVelo)) - v1;
         float h = -diff.y;
         diff.y = 0;
         float d = diff.magnitude;
@@ -111,13 +111,13 @@ public class KineticWeapons : MonoBehaviour
         Vector3 diff = v2 - v1;
         Vector3 diff2 = v2_2 - v1;
         Vector3 diff3 = v2_2_2 - v1;
-        Debug.DrawRay(transform.position, diff, Color.magenta);
+        //Debug.DrawRay(transform.position, diff, Color.magenta);
         Debug.DrawRay(transform.position, diff2, Color.cyan);
         Debug.DrawRay(transform.position, diff3, Color.blue);
-        Debug.DrawRay(transform.position, 5 * v4.normalized, Color.green);
-        Debug.DrawRay(transform.position, 5 * v3.normalized, Color.red);
-        Debug.DrawRay(transform.position, 5 * v5.normalized, Color.yellow);
-        Debug.DrawRay(transform.position, 5 * v6.normalized, Color.black);
+        // Debug.DrawRay(transform.position, 5 * v4.normalized, Color.green);
+        // Debug.DrawRay(transform.position, 5 * v3.normalized, Color.red);
+        //Debug.DrawRay(transform.position, 5 * v5.normalized, Color.yellow);
+        // Debug.DrawRay(transform.position, 5 * v6.normalized, Color.black);
         if (Input.GetMouseButtonDown(0))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
