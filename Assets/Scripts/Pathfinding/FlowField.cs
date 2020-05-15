@@ -14,6 +14,8 @@ public class FlowField : MonoBehaviour
 
     int targetX, targetY;
 
+    public static GridR grid;
+
     ChunkNode[,] mapChunks;
 
     public float chunkScale = 10;
@@ -172,6 +174,8 @@ public class FlowField : MonoBehaviour
         finalGrid.integrationField[(int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)] = 0;
         finalGrid.dirtySquares.Add(new Vector2Int((int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)));
         finalGrid.compute();
+        finalGrid.chunkX = endChunkX;
+        finalGrid.chunkY = endChunkY;
         request.chunkSteps.Add(new Vector2Int(endChunkX, endChunkY), finalGrid);
 
         FlowGrid lastGrid = finalGrid;
@@ -280,17 +284,30 @@ public class FlowField : MonoBehaviour
             testGrid.integrationField[i, 15] = 0;
             testGrid.dirtySquares.Add(new Vector2Int(i,15));
         }
-        
 
+        grid = GameObject.FindObjectOfType<GridR>();
         testGrid.compute();
 
-        testRequest = requestPath(Vector2.zero, new Vector2(20,56));
+        testRequest = requestPath(Vector2.zero, new Vector2(5,56));
     }
 
 
     public void Update()
     {
-
+        return;
+        foreach(KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
+        {
+            Debug.Log(pair.Key);
+            for (int i = 0; i < FlowGrid.gridResolution; i++)
+            {
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
+                    Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.getCost(i,j));
+                    Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x,0, pair.Key.y), dir*5);
+                }
+            }
+        }
     }
 
 
@@ -340,6 +357,8 @@ public class FlowGrid
     
     public int[,] integrationField;
     public int[,] directionField;
+
+    public GridR grid;
 
     public FlowGrid()
     {
@@ -478,6 +497,10 @@ public class FlowGrid
 
     public int getCost(int x, int y)
     {
-        return 1;//TODO add in  way to load in obstacles;
+        //return 1;
+        int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)*10, (y + chunkY * gridResolution) *10);
+        
+        if (bld >= 0) return 20;
+        return 1;
     }
 }

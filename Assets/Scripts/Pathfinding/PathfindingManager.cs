@@ -5,6 +5,8 @@ using UnityEngine;
 public class PathfindingManager : MonoBehaviour
 {
 
+    
+
     public GameObject debugObject;
     public Unit[] debugList;
 

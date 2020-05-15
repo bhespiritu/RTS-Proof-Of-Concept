@@ -25,7 +25,7 @@ public class UnitManager
     private readonly int max_units_per_leaf = 15;
 
 
-    private KDTree unitTree = new KDTree();
+    //private KDTree unitTree = new KDTree();
 
 
     public void AddUnit()
