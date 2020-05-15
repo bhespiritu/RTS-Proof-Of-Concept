@@ -4,22 +4,35 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-
+    public string name;
     public int health;
-
+    public int healthregen;
     public static float moveSpeed;
     public static float turnSpeed;
-    public static float energyConsumption;
+    public int killCount;
+    public int veterancy;
     public static float visionRadius;
     public static float radarRadius;
-    public int killCount;
+    public static float sonarRadius;
+    public int armor;
+    // Heat produced, negative if it takes heat from surroundings
+    public int heatProd;
+    public int currentHeat;
+    public int heatMin;
+    public int heatMax;
+    public int massCost;
+    public int energyCost;
+    public int massProd;
+    public int energyProd;
 
-    //Weapon information need this for each weapon
-    public float dps;
+    // Weapon information, need this for each weapon
     public float projectileDmg;
+    public float projectileSpd;
+    public int projectileHeat;
+    public float tolerance;
     public float reloadTime;
-    public float WeaponRange;
-
+    public float weaponRange;
+    public int selfHeat;
 
     // Start is called before the first frame update
     void Start()
@@ -36,13 +49,32 @@ public class Unit : MonoBehaviour
     //I'm going to start adding things I think we need. Feel free to correct 
     //@Author Roger Clanton
     void takeDamage(int dmg){
-        health -= dmg;
+        health -= dmg/armor;
         if (health <= 0){
+            unitDeath();
+        }
+
+    }
+
+    void heatChange(int heat)
+    {
+        currentHeat += heat;
+        if (currentHeat < heatMin)
+        {
+            unitDeath();
+        }
+        if (currentHeat > heatMax)
+        {
             unitDeath();
         }
     }
 
-    //Destroys the unit. Notifies unit manager
+    void regenerateHealth(int healthregen)
+    {
+        health += healthregen;
+    }
+
+    //Destroys the unit. Notifies unit manager, notifies killer for veterancy purposes
     void unitDeath(){
 
     }

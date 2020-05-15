@@ -25,7 +25,7 @@ public class KineticWeapons : MonoBehaviour
     Vector3 maximumTrajectory(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
     {
         float grav = 9.8f;
-        float projVelo = 20.0f;
+        float projVelo = 100.0f;
         Vector3 diff = v2 - v1;
         float h = -diff.y;
         diff.y = 0;

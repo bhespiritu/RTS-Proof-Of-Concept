@@ -11,7 +11,7 @@ public class CollisionDetector : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Laser Collision!");
+        Destroy(gameObject);
     }
 
     // Update is called once per frame
