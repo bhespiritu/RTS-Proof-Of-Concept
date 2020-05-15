@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BuildingPlacer : MonoBehaviour
 {
 
-    private GridR grid;
+    public GridR grid;
 
     public Material placeable;
     public Material unplaceable;
@@ -30,7 +31,6 @@ public class BuildingPlacer : MonoBehaviour
         building = FindObjectOfType<Building>();
         buildingPrefab = building.getBuildingPrefab();
         //Find the grid, stores information about whether a space is placeable
-        grid = FindObjectOfType<GridR>();
         //Glowy construct of where the building will be placed
         cursor = Instantiate(buildingPrefab);
         //Layers and mesh for cursor
@@ -62,6 +62,9 @@ public class BuildingPlacer : MonoBehaviour
 
                 //Snap to the grid
                 cursor.transform.position = grid.getGridPoint(hitInfo.point);
+                //New offset so it fits on the grid spot
+                Vector3 pos = new Vector3(0f, 4.5f, 0f);
+                cursor.transform.position += pos;
                 localUp = hitInfo.normal;
                 cursor.transform.position += hitInfo.normal * 0.5f;
 
@@ -124,7 +127,7 @@ public class BuildingPlacer : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
 
-                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask) && checkPosition())
+                if (checkPosition())
                 {
                     PlaceBuildingNear();
                 }
@@ -149,17 +152,21 @@ public class BuildingPlacer : MonoBehaviour
     }
     private bool checkPosition()
     {
+        //plus 5 comes from the offset
         int bldType = grid.getBuilding(cursor.transform.position.x, cursor.transform.position.z);
         if (bldType == -1)
         {
+            
             foreach (Transform child in cursor.transform)
             {
+                //plus 5 comes from the offset
                 if (grid.getBuilding(child.position.x, child.position.z) != bldType)
                 {
                     return false;
                 }
             }
         }
+        else if (bldType >= 1) { return false; }
         else { return false; }
         return true;
     }
@@ -167,6 +174,7 @@ public class BuildingPlacer : MonoBehaviour
     private void PlaceBuildingNear(){
         //Place the object based on the normal
         GameObject build = GameObject.Instantiate(buildingPrefab);
+        
         build.transform.position = cursor.transform.position;
         build.transform.rotation = cursor.transform.rotation;
 
