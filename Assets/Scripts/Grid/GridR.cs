@@ -17,11 +17,13 @@ public class GridR : MonoBehaviour
 
     private int[,] bldSpots = new int[1000,1000];
 
+    private GameObject[,] blds = new GameObject[1000,1000];
+
     private void Awake()
     {
         createMap();
     }
-        public Vector3 getGridPoint(Vector3 position){
+    public Vector3 getGridPoint(Vector3 position){
         //Subtract off its coordinates before multiplication
         position -= transform.position;
 
@@ -43,13 +45,23 @@ public class GridR : MonoBehaviour
         return bldSpots[(int)x, (int)y];
     }
 
+    public GameObject getBuildingReference(float x, float y)
+    {
+        return blds[(int)x, (int)y];
+    }
+
     public void updateBuilding(float x, float y, int bld)
     {
         bldSpots[(int)x, (int)y] = bld;
     }
-   
-   //Test to draw spheres on the points of the grid
-   private void OnDrawGizmos(){
+
+    public void updateBuildingReference(float x, float y, GameObject bld)
+    {
+        blds[(int)x, (int)y] = bld;
+    }
+
+    //Test to draw spheres on the points of the grid
+    private void OnDrawGizmos(){
        Gizmos.color = Color.yellow;
        for(float x = 0; x<1000; x+= spacing){
            for(float y = 0; y<1000; y+= spacing){
@@ -59,6 +71,7 @@ public class GridR : MonoBehaviour
            }
        }
     }
+
     private void createMap()
     {
         //Path file for map
@@ -139,21 +152,27 @@ public class GridR : MonoBehaviour
             }
         }
         if(min <= 46 && max <= 46) { 
-            bldSpots[i, j] = 2;
+            bldSpots[i, j] = -2;
             return;
         }
 
+       
         //Check if the heights are on opposite sides of the square
         if ((heights[0]==max || heights[0]==min) && (heights[3] == min || heights[3] == max)  || (heights[1] == max || heights[1] == min) && (heights[2] == min || heights[2] == max))
         {
             float distance = Mathf.Sqrt(2) * spacing;
-            if(Mathf.Rad2Deg * Mathf.Atan((max - min) / distance) <= 30){bldSpots[i, j] = 1;}
+            if(Mathf.Rad2Deg * Mathf.Atan((max - min) / distance) <= 30){bldSpots[i, j] = -1;}
             else{ bldSpots[i, j] = 0;}
         }
         else
         {
-            if (Mathf.Rad2Deg * Mathf.Atan((max - min) / spacing) <= 30) { bldSpots[i, j] = 1; }
+            if (Mathf.Rad2Deg * Mathf.Atan((max - min) / spacing) <= 30) { bldSpots[i, j] = -1; }
             else { bldSpots[i, j] = 0; }
         }
     }
+    public float getSpacing()
+    {
+        return spacing;
+    }
+
 }
