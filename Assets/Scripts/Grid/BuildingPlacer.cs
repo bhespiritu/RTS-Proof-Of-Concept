@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.UI;
 using UnityEngine;
 
-public class CubePlacer : MonoBehaviour
+public class BuildingPlacer : MonoBehaviour
 {
 
     private GridR grid;
@@ -11,7 +12,7 @@ public class CubePlacer : MonoBehaviour
     public Material placeable;
     public Material unplaceable;
 
-    public GameObject buildingPrefab;
+    private GameObject buildingPrefab;
 
     public GameObject cursor;
 
@@ -22,8 +23,12 @@ public class CubePlacer : MonoBehaviour
 
     public LayerMask buildingsLayerMask;
 
+    private Building building;
     private void Awake() {
 
+        //Find the prefab from building
+        building = FindObjectOfType<Building>();
+        buildingPrefab = building.getBuildingPrefab();
         //Find the grid, stores information about whether a space is placeable
         grid = FindObjectOfType<GridR>();
         //Glowy construct of where the building will be placed
@@ -42,7 +47,6 @@ public class CubePlacer : MonoBehaviour
     }
 
     private void Update() {
-
         //Shoot a ray to the mouse
         RaycastHit hitInfo;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -85,6 +89,25 @@ public class CubePlacer : MonoBehaviour
 
             }
 
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                buildingPrefab = building.switchBuilding(1);
+                changeCursor();
+                
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                buildingPrefab = building.switchBuilding(2);
+                changeCursor();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                buildingPrefab = building.switchBuilding(3);
+                changeCursor();
+            }
+
             if (Input.GetKeyDown(KeyCode.A))
             {
                 Vector3 temp = cursor.transform.forward;
@@ -103,17 +126,31 @@ public class CubePlacer : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask) && checkPosition())
                 {
-                    PlaceCubeNear();
+                    PlaceBuildingNear();
                 }
             }
         }
 
     }
 
+    private void changeCursor()
+    {
+        Destroy(cursor);
+        cursor = Instantiate(buildingPrefab);
+        //Layers and mesh for cursor
+        mesh = cursor.GetComponent<MeshRenderer>();
+        cursor.layer = 8;
+        foreach (Transform child in cursor.transform)
+        {
+            child.gameObject.layer = 8;
+            childMesh = child.GetComponent<MeshRenderer>();
+            childMesh.material = placeable;
+        }
+    }
     private bool checkPosition()
     {
         int bldType = grid.getBuilding(cursor.transform.position.x, cursor.transform.position.z);
-        if (bldType != 0 && bldType != 3)
+        if (bldType == -1)
         {
             foreach (Transform child in cursor.transform)
             {
@@ -127,17 +164,18 @@ public class CubePlacer : MonoBehaviour
         return true;
     }
     
-    private void PlaceCubeNear(){
+    private void PlaceBuildingNear(){
         //Place the object based on the normal
-        GameObject cube = GameObject.Instantiate(buildingPrefab);
-        cube.transform.position = cursor.transform.position;
-        cube.transform.rotation = cursor.transform.rotation;
+        GameObject build = GameObject.Instantiate(buildingPrefab);
+        build.transform.position = cursor.transform.position;
+        build.transform.rotation = cursor.transform.rotation;
 
         //update the grid
-        grid.updateBuilding(cube.transform.position.x, cube.transform.position.z, 3);
+        grid.updateBuilding(build.transform.position.x, build.transform.position.z, 3);
         foreach (Transform child in cursor.transform)
         {
-            grid.updateBuilding(child.position.x, child.position.z, 3);
+            grid.updateBuilding(child.position.x, child.position.z, building.getBldType());
+            building.place(build);
         }
     }
 }

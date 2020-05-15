@@ -10,69 +10,327 @@ using UnityEditor;//TODO remove this
  */
 public class FlowField : MonoBehaviour
 {
-    int mapSize = 32;
-
-    FlowGrid[][] subGrids;
-    
+    int mapSize = 16;
 
     int targetX, targetY;
 
+    ChunkNode[,] mapChunks;
 
     public static FlowGrid testGrid;
+    public static PathRequest testRequest;
 
-    public void Start()
+    private class ChunkNode
     {
-        testGrid = new FlowGrid();
-        testGrid.integrationField[10, 10] = 0;
-        testGrid.dirtySquares.Add(Vector2Int.one * 10);
+
+        public ChunkNode(int x, int y)
+        {
+            gridPos = new Vector2Int(x, y);
+        }
+
+        public Vector2Int gridPos;
+
+        public ChunkNode parent;
+
+        public int gCost = 0;
+        public int hCost = 0;
+
+        public int fCost
+        {
+            get
+            {
+                return gCost + hCost;
+            }
+        }
+    }
+
+    public PathRequest requestPath(Vector2 start, Vector2 end)
+    {
+        //TODO generating portal maps
+
+        PathRequest request = new PathRequest();
+        request.mapSize = mapSize;
+
+        int startChunkX = (int)(start.x/mapSize);
+        int startChunkY = (int)(start.y / mapSize);
+
+        int endChunkX = (int)(end.x / mapSize);
+        int endChunkY = (int)(end.y / mapSize);
+
+        ChunkNode currentNode = mapChunks[startChunkX, startChunkY];
+        ChunkNode endNode = mapChunks[endChunkX, endChunkY];
+
+        List<ChunkNode> path = new List<ChunkNode>();
+
+        List<ChunkNode> openSet = new List<ChunkNode>();//TODO replace with Heap optimization
+        HashSet<ChunkNode> closedSet = new HashSet<ChunkNode>();
+
+
+        openSet.Add(currentNode);
+
+        while(openSet.Count > 0)
+        {
+            ChunkNode node = openSet[0];
+            for(int i = 1; i < openSet.Count; i++)
+            {
+                ChunkNode other = openSet[i];
+                if (other.fCost <= node.fCost)
+                {
+                    if (other.hCost < node.hCost)
+                        node = other;
+                }
+            }
+
+            openSet.Remove(node);
+            closedSet.Add(node);
+
+            if (node == endNode)
+            {
+                ChunkNode trace = endNode;
+
+                while(trace != currentNode)
+                {
+                    path.Add(trace);
+                    trace = trace.parent;
+                }
+                path.Add(currentNode);
+                break;
+            }
+
+            ChunkNode neighbor;
+            if (node.gridPos.y < mapSize - 1)
+            {
+                neighbor = mapChunks[node.gridPos.x, node.gridPos.y + 1];
+                if (!closedSet.Contains(neighbor))
+                {//up
+                    int newCost = node.gCost + 1;
+                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
+                    {
+                        neighbor.gCost = newCost;
+                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
+                        neighbor.parent = node;
+                        if (!openSet.Contains(neighbor))
+                            openSet.Add(neighbor);
+                    }
+                }
+            }
+            if (node.gridPos.x < mapSize - 1)
+            {
+                neighbor = mapChunks[node.gridPos.x + 1, node.gridPos.y];
+                if (!closedSet.Contains(neighbor))
+                {//right
+                    int newCost = node.gCost + 1;
+                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
+                    {
+                        neighbor.gCost = newCost;
+                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
+                        neighbor.parent = node;
+                        if (!openSet.Contains(neighbor))
+                            openSet.Add(neighbor);
+                    }
+                }
+            }
+
+            if (node.gridPos.y > 0)
+            {
+                neighbor = mapChunks[node.gridPos.x, node.gridPos.y - 1];
+                if (!closedSet.Contains(neighbor))
+                {//down
+                    int newCost = node.gCost + 1;
+                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
+                    {
+                        neighbor.gCost = newCost;
+                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
+                        neighbor.parent = node;
+                        if (!openSet.Contains(neighbor))
+                            openSet.Add(neighbor);
+                    }
+                }
+            }
+
+            if (node.gridPos.x > 0)
+            {
+                neighbor = mapChunks[node.gridPos.x - 1, node.gridPos.y];
+                if (!closedSet.Contains(neighbor))
+                {//left
+                    int newCost = node.gCost + 1;
+                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
+                    {
+                        neighbor.gCost = newCost;
+                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
+                        neighbor.parent = node;
+                        if (!openSet.Contains(neighbor))
+                            openSet.Add(neighbor);
+                    }
+                }
+            }
+
+        }
+
+
+        FlowGrid finalGrid = new FlowGrid();
+        finalGrid.integrationField[(int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)] = 0;
+        finalGrid.dirtySquares.Add(new Vector2Int((int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)));
+        finalGrid.compute();
+        request.chunkSteps.Add(new Vector2Int(endChunkX, endChunkY), finalGrid);
+
+        FlowGrid lastGrid = finalGrid;
+        for (int i = 1; i < path.Count; i++)
+        {
+            ChunkNode next = path[i-1];
+            ChunkNode current = path[i];
+            Vector2Int relative = next.gridPos - current.gridPos;
+
+            var placeHolder = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            Vector3 position = new Vector3(current.gridPos.x, 0, current.gridPos.y)*16 + new Vector3(8, 0, 8);
+            placeHolder.transform.position = position;
+            placeHolder.transform.localScale = Vector3.one * 1.6f;
+            placeHolder.GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, (float)i / path.Count);
+           
+
+            FlowGrid newGrid = new FlowGrid();
+            if (relative.x == -1)//left
+            {
+                for(int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.integrationField[0, j] = lastGrid.integrationField[FlowGrid.gridResolution-1,j] + 1;
+                    newGrid.dirtySquares.Add(new Vector2Int(0, j));//TODO carryover from the previous grid.
+                }
+                newGrid.compute();
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.directionField[0, j] = 6;
+                }
+            }
+            else if (relative.x == 1)//right
+            {
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.integrationField[FlowGrid.gridResolution - 1, j] = lastGrid.integrationField[0, j] + 1;
+                    newGrid.dirtySquares.Add(new Vector2Int(FlowGrid.gridResolution - 1, j));
+                }
+                newGrid.compute();
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.directionField[FlowGrid.gridResolution - 1, j] = 2;
+                }
+            } else if (relative.y == 1)//up
+            {
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.integrationField[j, FlowGrid.gridResolution - 1] = lastGrid.integrationField[j, 0] + 1;
+                    newGrid.dirtySquares.Add(new Vector2Int(j, FlowGrid.gridResolution - 1));
+                }
+                newGrid.compute();
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.directionField[j, FlowGrid.gridResolution - 1] = 4;
+                }
+            } else if (relative.y == -1)//down
+            {
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.integrationField[j,0] = lastGrid.integrationField[j, FlowGrid.gridResolution - 1] + 1;
+                    newGrid.dirtySquares.Add(new Vector2Int(j,0));
+                }
+                newGrid.compute();
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    newGrid.directionField[j,0] = 0;
+                }
+            } else
+            {
+                Debug.LogError("Invalid Path Found");
+            }
+
+            newGrid.chunkX = current.gridPos.x;
+            newGrid.chunkY = current.gridPos.y;
+            request.chunkSteps.Add(current.gridPos, newGrid);
+
+            lastGrid = newGrid;
+        }
         
 
-        for (int i = 0; i < FlowGrid.gridResolution; i++)
+        var placeHolder2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        Vector3 position2 = new Vector3(endChunkX, 0, endChunkY) * 16 + new Vector3(8, 0, 8);
+        placeHolder2.transform.position = position2;
+        placeHolder2.transform.localScale = Vector3.one * 1.6f;
+        placeHolder2.GetComponent<Renderer>().material.color = Color.red;
+
+        return request;
+    }
+
+
+    public void Awake()
+    {
+        mapChunks = new ChunkNode[mapSize, mapSize];
+        for(int i = 0; i < mapSize; i++)
         {
-            for (int j = 0; j < FlowGrid.gridResolution; j++)
+            for (int j = 0; j < mapSize; j++)
             {
-                if ((i > 5 || i < 3) && (j > 3 && j < 9))
-                {
-                    testGrid.costField[i, j] = 2048;
-                }
+                mapChunks[i, j] = new ChunkNode(i, j);
             }
         }
 
+        testGrid = new FlowGrid();
+        for(int i = 0; i < FlowGrid.gridResolution; i++)
+        {
+            testGrid.integrationField[i, 15] = 0;
+            testGrid.dirtySquares.Add(new Vector2Int(i,15));
+        }
+        
+
         testGrid.compute();
+
+        testRequest = requestPath(Vector2.zero, new Vector2(56,100));
     }
+
 
     public void Update()
     {
-        for(int i = 0; i < FlowGrid.gridResolution; i++)
+        foreach(KeyValuePair<Vector2Int,FlowGrid> pair in testRequest.chunkSteps)
         {
-            for(int j = 0; j < FlowGrid.gridResolution; j++)
+            for (int i = 0; i < FlowGrid.gridResolution; i++)
             {
-                Vector3 position = new Vector3(i + 0.5f, 0, j + 0.5f);
-                Vector3 direction = FlowGrid.GetDirection(testGrid.directionField[i,j])/2;
-                Debug.DrawRay(position, direction);
+                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                {
+                    Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
+                    //Debug.DrawRay(Vector3.one * .5f + new Vector3(i, 0, j) + new Vector3(pair.Key.x,0,pair.Key.y)*16, dir / 2);
+                    //Debug.DrawRay(Vector3.one * .5f + new Vector3(i, 0, j) + new Vector3(pair.Key.x, 0, pair.Key.y) * 16, Vector3.up*pair.Value.integrationField[i,j]/50, Color.red);
+                }
             }
         }
     }
 
-    public void OnDrawGizmos()
+
+
+}
+
+
+public class PathRequest
+{
+    public Dictionary<Vector2Int,FlowGrid> chunkSteps = new Dictionary<Vector2Int, FlowGrid>();
+
+    public int mapSize;//change to constructor later
+
+    public Vector3 getDirection(float x, float y)
     {
-        for (int i = 0; i < FlowGrid.gridResolution; i++)
-        {
-            for (int j = 0; j < FlowGrid.gridResolution; j++)
-            {
-                Vector3 position = new Vector3(i + 0.5f, 0, j + 0.5f);
-                Handles.Label(position, testGrid.costField[i, j] + "");
-                //Handles.Label(position + Vector3.right/4, testGrid.integrationField[i, j] + "");
-            }
-        }
-    }
 
+        int ChunkX = (int)(x / FlowGrid.gridResolution);
+        int ChunkY = (int)(y / FlowGrid.gridResolution);
+        int gridX = (int)(x % FlowGrid.gridResolution);
+        int gridY = (int)(y % FlowGrid.gridResolution);
+
+        FlowGrid grid = chunkSteps[new Vector2Int(ChunkX, ChunkY)];
+
+        return FlowGrid.GetDirection(grid.directionField[gridX, gridY]);
+    }
 }
 
 public class FlowGrid
 {
+    public int chunkX, chunkY;
 
-    public static int gridResolution = 32;
+    public static int gridResolution = 16;
     private static int[] directionLUT = {7,0,1,6,-1,2,5,4,3};
     /* 0 = up
      * ... clockwise rotation
@@ -81,23 +339,25 @@ public class FlowGrid
      */
 
     public List<Vector2Int> dirtySquares;
-
-    public int[,] costField;//TODO figure out what the best way to pull the cost field from the map.
+    
     public int[,] integrationField;
     public int[,] directionField;
 
     public FlowGrid()
     {
         dirtySquares = new List<Vector2Int>();
-        costField = new int[gridResolution,gridResolution];
         integrationField = new int[gridResolution,gridResolution];
         directionField = new int[gridResolution,gridResolution];
+        reset();
+    }
+
+    public void reset()
+    {
         for (int i = 0; i < gridResolution; i++)
         {
             for (int j = 0; j < gridResolution; j++)
             {
-                integrationField[i, j] = 2*gridResolution*gridResolution;
-                costField[i, j] = 1;
+                integrationField[i, j] = 2 * gridResolution * gridResolution;
                 directionField[i, j] = -1;
             }
         }
@@ -109,7 +369,7 @@ public class FlowGrid
         while(dirtySquares.Count > 0)
         {
             Vector2Int current = dirtySquares[0];
-            Debug.Log(current);
+            //Debug.Log(current);
             dirtySquares.RemoveAt(0);
             for(int i = -1; i <= 1; i++)
             {
@@ -118,7 +378,7 @@ public class FlowGrid
                     Vector2Int next = current + new Vector2Int(i, j);
                     if (checkBounds(next.x,next.y))
                     {
-                        int newValue = integrationField[current.x, current.y] + costField[next.x,next.y];
+                        int newValue = integrationField[current.x, current.y] + getCost(next.x,next.y);
                         if(newValue < integrationField[next.x, next.y])
                         {
                             integrationField[next.x, next.y] = newValue;
@@ -191,7 +451,7 @@ public class FlowGrid
 
     private bool checkBounds(int i, int j)
     {
-        return (i > 0) && (j > 0) && (i < gridResolution) && (j < gridResolution);
+        return (i >= 0) && (j >= 0) && (i < gridResolution) && (j < gridResolution);
     }
 
     public static Vector3 GetDirection(int i)
@@ -214,9 +474,12 @@ public class FlowGrid
                 return (-Vector3.forward);
             case 1:
                 return (Vector3.right - Vector3.forward).normalized;
-
-
         }
         return Vector3.zero;
+    }
+
+    public int getCost(int x, int y)
+    {
+        return 1;//TODO add in  way to load in obstacles;
     }
 }
