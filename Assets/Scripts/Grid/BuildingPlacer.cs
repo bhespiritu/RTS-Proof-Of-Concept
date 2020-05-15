@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BuildingPlacer : MonoBehaviour
 {
 
-    private GridR grid;
+    public GridR grid;
 
     public Material placeable;
     public Material unplaceable;
@@ -30,7 +31,6 @@ public class BuildingPlacer : MonoBehaviour
         building = FindObjectOfType<Building>();
         buildingPrefab = building.getBuildingPrefab();
         //Find the grid, stores information about whether a space is placeable
-        grid = FindObjectOfType<GridR>();
         //Glowy construct of where the building will be placed
         cursor = Instantiate(buildingPrefab);
         //Layers and mesh for cursor
@@ -62,6 +62,9 @@ public class BuildingPlacer : MonoBehaviour
 
                 //Snap to the grid
                 cursor.transform.position = grid.getGridPoint(hitInfo.point);
+                //New offset so it fits on the grid spot
+                Vector3 pos = new Vector3(0f, 4.5f, 0f);
+                cursor.transform.position += pos;
                 localUp = hitInfo.normal;
                 cursor.transform.position += hitInfo.normal * 0.5f;
 
@@ -124,7 +127,7 @@ public class BuildingPlacer : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
 
-                if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask) && checkPosition())
+                if (checkPosition())
                 {
                     PlaceBuildingNear();
                 }
@@ -147,14 +150,25 @@ public class BuildingPlacer : MonoBehaviour
             childMesh.material = placeable;
         }
     }
+
+    public GridR getGrid()
+    {
+        return grid;
+    }
     private bool checkPosition()
     {
+        //plus 5 comes from the offset
         int bldType = grid.getBuilding(cursor.transform.position.x, cursor.transform.position.z);
-        if (bldType == -1)
+        SortedSet<int> validTypes = getValidFoundations();
+        Debug.Log("The sorted set is: " + validTypes);
+        Debug.Log("bldtype is: " + bldType);
+        Debug.Log("bldtype in valid types: " + validTypes.Contains(bldType));
+        if (validTypes.Contains(bldType))
         {
+            
             foreach (Transform child in cursor.transform)
             {
-                if (grid.getBuilding(child.position.x, child.position.z) != bldType)
+                if (!validTypes.Contains(grid.getBuilding(child.position.x, child.position.z)))
                 {
                     return false;
                 }
@@ -163,15 +177,33 @@ public class BuildingPlacer : MonoBehaviour
         else { return false; }
         return true;
     }
+
+    private SortedSet<int> getValidFoundations()
+    {
+        if (cursor.TryGetComponent<EnergyProducer>(out EnergyProducer energy))
+        {
+            return energy.getValidFoundation();
+        }
+        if (cursor.TryGetComponent<Pylon>(out Pylon pylon))
+        {
+            return pylon.getValidFoundation();
+        }
+        if (cursor.TryGetComponent<Producer>(out Producer producer))
+        {
+            return producer.getValidFoundation();
+        }
+        return new SortedSet<int> { };
+    }
     
     private void PlaceBuildingNear(){
         //Place the object based on the normal
         GameObject build = GameObject.Instantiate(buildingPrefab);
+        
         build.transform.position = cursor.transform.position;
         build.transform.rotation = cursor.transform.rotation;
 
         //update the grid
-        grid.updateBuilding(build.transform.position.x, build.transform.position.z, 3);
+        grid.updateBuilding(build.transform.position.x, build.transform.position.z, building.getBldType());
         foreach (Transform child in cursor.transform)
         {
             grid.updateBuilding(child.position.x, child.position.z, building.getBldType());

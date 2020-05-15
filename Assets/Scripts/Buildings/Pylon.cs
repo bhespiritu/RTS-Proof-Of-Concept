@@ -7,6 +7,7 @@ public class Pylon : MonoBehaviour
     private int buffGiven = 1;
     BuildingPlacer cubePlacer;
     GridR grid;
+    private SortedSet<int> placeable = new SortedSet<int>{ -1 };
 
     // Start is called before the first frame update
     void Start()
@@ -28,5 +29,10 @@ public class Pylon : MonoBehaviour
     public int getBuff()
     {
         return buffGiven;
+    }
+
+    public SortedSet<int> getValidFoundation()
+    {
+        return placeable;
     }
 }

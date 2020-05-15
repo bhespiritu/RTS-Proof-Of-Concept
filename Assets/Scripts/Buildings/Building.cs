@@ -62,8 +62,7 @@ public class Building : MonoBehaviour
                 placement.GetComponent<Pylon>().place();
                 break;
             case 3:
-                bldInt = 3;
-                buildingPrefab = buildingPrefab3;
+                placement.GetComponent<Producer>().place();
                 break;
         }
     }

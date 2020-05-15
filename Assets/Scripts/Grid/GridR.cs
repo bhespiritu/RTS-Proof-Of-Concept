@@ -15,9 +15,10 @@ public class GridR : MonoBehaviour
     [SerializeField]
     private float spacing = 10f;
 
-    private int[,] bldSpots = new int[1000,1000];
+    private int mapSizeX = 1000;
+    private int mapSizeY = 1000;
 
-    private GameObject[,] blds = new GameObject[1000,1000];
+    private int[,] bldSpots = new int[1000,1000];
 
     private void Awake()
     {
@@ -42,23 +43,23 @@ public class GridR : MonoBehaviour
 
    public int getBuilding(float x, float y)
     {
+        if (x >= mapSizeX || x < 0 || y >= mapSizeY || y < 0)
+        {
+            return 0;
+        }
         return bldSpots[(int)x, (int)y];
     }
 
-    public GameObject getBuildingReference(float x, float y)
-    {
-        return blds[(int)x, (int)y];
-    }
 
     public void updateBuilding(float x, float y, int bld)
     {
+        if (x >= mapSizeX || x < 0 || y >= mapSizeY || y < 0)
+        {
+            return;
+        }
         bldSpots[(int)x, (int)y] = bld;
     }
 
-    public void updateBuildingReference(float x, float y, GameObject bld)
-    {
-        blds[(int)x, (int)y] = bld;
-    }
 
     //Test to draw spheres on the points of the grid
     private void OnDrawGizmos(){
@@ -113,31 +114,35 @@ public class GridR : MonoBehaviour
                 //Console.WriteLine(text);
 
                 string[] info = text.Split(' ');
-                for (int j = 0; j <100; j += 1)
+                for (int j = 0; j <100; j++)
                 {
                     int number;
-                    Int32.TryParse(info[j], out number);
-                    bldSpots[i, j* (int)spacing] = number;
-                    //print(info[j]);
+                    Int32.TryParse(info[j+1], out number);
+                    //Debug.Log("j is: " +j + " j*spacing is: " + (j * (int)spacing));
+                    bldSpots[i, (j * (int)spacing)] = number;
+
                 }
                 i += (int)spacing;
                 text = reader.ReadLine();
             }
-            
         }
     }
 
     private float getLocationHeight(int i, int j)
     {
+        // The y value is arbitray. should be higher than the highest point on the map.
         Vector3 loc = new Vector3(i, 750, j);
         return Terrain.activeTerrain.SampleHeight(loc);
-
        
     }
     private void determinePlacability(int i, int j)
-    {
-        // The y value is arbitray. should be higher than the highest point on the map.
-        // 
+    {        
+        RaycastHit hitInfo;
+        if(Physics.Raycast(new Vector3(i, 750, j), Vector3.down, out hitInfo, Mathf.Infinity, buildingsLayerMask)){
+            bldSpots[i, j] = detectBuilding(hitInfo);
+            return;
+        }
+
         float[] heights = { getLocationHeight(i, j), getLocationHeight(i + (int)spacing, j), getLocationHeight(i, j + (int)spacing), getLocationHeight(i + (int)spacing, j + (int)spacing) };
         float max = heights[0];
         float min = heights[0];
@@ -173,6 +178,28 @@ public class GridR : MonoBehaviour
     public float getSpacing()
     {
         return spacing;
+    }
+
+    private int detectBuilding(RaycastHit hit)
+    {
+        if (hit.collider.gameObject.TryGetComponent<EnergyProducer>(out EnergyProducer energy))
+        {
+            return 1;
+        }
+        if (hit.collider.gameObject.TryGetComponent<Pylon>(out Pylon pylon))
+        {
+            return 2;
+        }
+        if (hit.collider.gameObject.TryGetComponent<Producer>(out Producer producer))
+        {
+            return 3;
+        }
+        if (hit.collider.gameObject.TryGetComponent<ProducerSpot>(out ProducerSpot producerSpot))
+        {
+            return -3;
+        }
+
+        return 0;
     }
 
 }
