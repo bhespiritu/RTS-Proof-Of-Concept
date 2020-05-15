@@ -79,7 +79,7 @@ public class UnitGroup
     {
         Unit u = associatedUnits[i];
         Vector3 pos = u.transform.position;
-        return FlowGrid.GetDirection(FlowField.testGrid.directionField[(int)pos.x, (int)pos.z]);
+        return FlowField.testRequest.getDirection(pos.x,pos.z);
     }
 
     public Vector3 groupPosition;
