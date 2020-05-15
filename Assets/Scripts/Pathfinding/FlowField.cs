@@ -16,6 +16,8 @@ public class FlowField : MonoBehaviour
 
     ChunkNode[,] mapChunks;
 
+    public float chunkScale = 10;
+
     public static FlowGrid testGrid;
     public static PathRequest testRequest;
 
@@ -47,10 +49,9 @@ public class FlowField : MonoBehaviour
     {
         //TODO generating portal maps
 
-        PathRequest request = new PathRequest();
-        request.mapSize = mapSize;
+        PathRequest request = new PathRequest(chunkScale);
 
-        int startChunkX = (int)(start.x/mapSize);
+        int startChunkX = (int)(start.x / mapSize);
         int startChunkY = (int)(start.y / mapSize);
 
         int endChunkX = (int)(end.x / mapSize);
@@ -180,10 +181,12 @@ public class FlowField : MonoBehaviour
             ChunkNode current = path[i];
             Vector2Int relative = next.gridPos - current.gridPos;
 
+
+            //temp visualization
             var placeHolder = GameObject.CreatePrimitive(PrimitiveType.Plane);
             Vector3 position = new Vector3(current.gridPos.x, 0, current.gridPos.y)*16 + new Vector3(8, 0, 8);
-            placeHolder.transform.position = position;
-            placeHolder.transform.localScale = Vector3.one * 1.6f;
+            placeHolder.transform.position = position*chunkScale;
+            placeHolder.transform.localScale = Vector3.one * 1.6f * chunkScale;
             placeHolder.GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, (float)i / path.Count);
            
 
@@ -252,8 +255,8 @@ public class FlowField : MonoBehaviour
 
         var placeHolder2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
         Vector3 position2 = new Vector3(endChunkX, 0, endChunkY) * 16 + new Vector3(8, 0, 8);
-        placeHolder2.transform.position = position2;
-        placeHolder2.transform.localScale = Vector3.one * 1.6f;
+        placeHolder2.transform.position = position2*chunkScale;
+        placeHolder2.transform.localScale = Vector3.one * 1.6f * chunkScale;
         placeHolder2.GetComponent<Renderer>().material.color = Color.red;
 
         return request;
@@ -281,24 +284,13 @@ public class FlowField : MonoBehaviour
 
         testGrid.compute();
 
-        testRequest = requestPath(Vector2.zero, new Vector2(56,100));
+        testRequest = requestPath(Vector2.zero, new Vector2(20,56));
     }
 
 
     public void Update()
     {
-        foreach(KeyValuePair<Vector2Int,FlowGrid> pair in testRequest.chunkSteps)
-        {
-            for (int i = 0; i < FlowGrid.gridResolution; i++)
-            {
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
-                    //Debug.DrawRay(Vector3.one * .5f + new Vector3(i, 0, j) + new Vector3(pair.Key.x,0,pair.Key.y)*16, dir / 2);
-                    //Debug.DrawRay(Vector3.one * .5f + new Vector3(i, 0, j) + new Vector3(pair.Key.x, 0, pair.Key.y) * 16, Vector3.up*pair.Value.integrationField[i,j]/50, Color.red);
-                }
-            }
-        }
+
     }
 
 
@@ -310,15 +302,21 @@ public class PathRequest
 {
     public Dictionary<Vector2Int,FlowGrid> chunkSteps = new Dictionary<Vector2Int, FlowGrid>();
 
-    public int mapSize;//change to constructor later
+    float mapScale;
+
+    public PathRequest(float scale)
+    {
+        mapScale = scale;
+    }
 
     public Vector3 getDirection(float x, float y)
     {
-
-        int ChunkX = (int)(x / FlowGrid.gridResolution);
-        int ChunkY = (int)(y / FlowGrid.gridResolution);
-        int gridX = (int)(x % FlowGrid.gridResolution);
-        int gridY = (int)(y % FlowGrid.gridResolution);
+        float sx = x / mapScale;
+        float sy = y / mapScale;
+        int ChunkX = (int)(sx / FlowGrid.gridResolution);
+        int ChunkY = (int)(sy / FlowGrid.gridResolution);
+        int gridX = (int)(sx % FlowGrid.gridResolution);
+        int gridY = (int)(sy % FlowGrid.gridResolution);
 
         FlowGrid grid = chunkSteps[new Vector2Int(ChunkX, ChunkY)];
 
@@ -363,7 +361,7 @@ public class FlowGrid
         }
     }
 
-    public void compute()
+    public void compute()//TODO: Implement more sophisticated systems such as the LOS Pass.
     {
         //Assign target squares before calling compute.
         while(dirtySquares.Count > 0)

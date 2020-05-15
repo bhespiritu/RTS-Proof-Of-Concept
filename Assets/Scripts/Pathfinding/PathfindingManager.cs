@@ -37,6 +37,7 @@ public class PathfindingManager : MonoBehaviour
         {
             Unit u = units[i];
             futurePositions[i] = u.transform.position + group.desiredUnitDirection(i)*Time.fixedDeltaTime;
+            futurePositions[i].y = 0;
             isMoving[i] = group.desiredUnitDirection(i).sqrMagnitude > 0;
         }
 
@@ -59,7 +60,10 @@ public class PathfindingManager : MonoBehaviour
                 }
             }
             newVelocity.y = 0;
-            priorityUnit.transform.position += newVelocity * Time.fixedDeltaTime * speed;
+            Vector3 nextPos = priorityUnit.transform.position;
+            nextPos += newVelocity * Time.fixedDeltaTime * speed;
+            nextPos.y = Terrain.activeTerrain.SampleHeight(nextPos)+ 5;
+            priorityUnit.transform.position = nextPos;
         }
     }
 
@@ -69,8 +73,8 @@ public class PathfindingManager : MonoBehaviour
 public class UnitGroup
 {
 
-    public static float soft_unit_size = 5; //the amount of social distance each unit wants as a radius. thats a corona joke for ya.
-    public static float hard_unit_size = 1; //how far must they be for them to be touching.
+    public static float soft_unit_size = 20; //the amount of social distance each unit wants as a radius. thats a corona joke for ya.
+    public static float hard_unit_size = 15; //how far must they be for them to be touching.
 
     public List<Unit> associatedUnits = new List<Unit>(); //first object is leader, lower index means higher priority
     FlowField pathfindingField;
