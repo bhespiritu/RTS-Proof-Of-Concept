@@ -294,7 +294,7 @@ public class FlowField : MonoBehaviour
 
     public void Update()
     {
-        return;
+        //return;
         foreach(KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
         {
             Debug.Log(pair.Key);
@@ -303,7 +303,7 @@ public class FlowField : MonoBehaviour
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
                 {
                     Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
-                    Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.getCost(i,j));
+                    Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.integrationField[i,j]/50);
                     Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x,0, pair.Key.y), dir*5);
                 }
             }
@@ -395,6 +395,8 @@ public class FlowGrid
                     Vector2Int next = current + new Vector2Int(i, j);
                     if (checkBounds(next.x,next.y))
                     {
+                        int cost = getCost(next.x, next.y);
+                        if (cost >= 255) continue;
                         int newValue = integrationField[current.x, current.y] + getCost(next.x,next.y);
                         if(newValue < integrationField[next.x, next.y])
                         {
@@ -500,7 +502,7 @@ public class FlowGrid
         //return 1;
         int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)*10, (y + chunkY * gridResolution) *10);
         
-        if (bld >= 0) return 20;
+        if (bld >= 0) return 256;
         return 1;
     }
 }
@@ -523,7 +525,7 @@ public class PortalGraph
 
     public PortalNode[] GetNodesAt(Vector2Int input)
     {
-        return GetNodeAt(input.x, input.y);
+        return GetNodesAt(input.x, input.y);
     }
 
     public PortalNode[] GetNodesAt(int x, int y)
