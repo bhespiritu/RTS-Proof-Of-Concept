@@ -243,12 +243,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &446926268
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -354,12 +369,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &976260753
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -540,12 +570,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &1335420167
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -651,12 +696,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &1374459095
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -741,6 +801,7 @@ GameObject:
   - component: {fileID: 1603270260}
   - component: {fileID: 1603270259}
   - component: {fileID: 1603270261}
+  - component: {fileID: 1603270262}
   m_Layer: 0
   m_Name: FlowField
   m_TagString: Untagged
@@ -791,6 +852,25 @@ MonoBehaviour:
   debugList: []
   avoidanceWeight: 1
   speed: 50
+--- !u!114 &1603270262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603270258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6f29ac85f537b4794d6f728e61127a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  buildingsLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  spacing: 10
 --- !u!1 &1904547732
 GameObject:
   m_ObjectHideFlags: 0
@@ -823,12 +903,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &1904547734
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -934,12 +1029,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7591743a0ef3420468a6d2d7dcc02f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
   health: 0
+  healthregen: 0
   killCount: 0
-  dps: 0
+  veterancy: 0
+  armor: 0
+  heatProd: 0
+  currentHeat: 0
+  heatMin: 0
+  heatMax: 0
+  massCost: 0
+  energyCost: 0
+  massProd: 0
+  energyProd: 0
   projectileDmg: 0
+  projectileSpd: 0
+  projectileHeat: 0
+  tolerance: 0
   reloadTime: 0
-  WeaponRange: 0
+  weaponRange: 0
+  selfHeat: 0
 --- !u!65 &1932197582
 BoxCollider:
   m_ObjectHideFlags: 0
