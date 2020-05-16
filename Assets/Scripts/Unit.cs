@@ -76,7 +76,7 @@ public class Unit : MonoBehaviour
 
     //Destroys the unit. Notifies unit manager, notifies killer for veterancy purposes
     void unitDeath(){
-
+        Destroy(gameObject);
     }
 
 

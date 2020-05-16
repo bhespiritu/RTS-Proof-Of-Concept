@@ -35,4 +35,9 @@ public class Player : MonoBehaviour
     {
         return totalMass;
     }
+
+    public int getEnergy()
+    {
+        return totalEnergy;
+    }
 }
