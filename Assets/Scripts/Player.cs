@@ -7,7 +7,9 @@ public class Player : MonoBehaviour
     public int totalMass;
     public int totalEnergy;
     public int totalUnits;
-    public long score;
+    public ulong score;
+
+    
 
     // Start is called before the first frame update
     void Start()

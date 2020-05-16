@@ -7,6 +7,8 @@ public class WorldManager : MonoBehaviour
 
     public static WorldManager INSTANCE;
 
+    List<Player> players = new List<Player>();
+
     private float _startTime;
     private float _currentTime;
 
@@ -15,6 +17,8 @@ public class WorldManager : MonoBehaviour
 
     public delegate void TickEvent();
     public static event TickEvent OnRoundTick;
+
+    public bool isPaused = false;
 
     public WorldManager()
     {
@@ -37,9 +41,11 @@ public class WorldManager : MonoBehaviour
 
     public void FixedUpdate()
     {
-        _currentTime += Time.fixedDeltaTime;
-
-        OnRoundTick?.Invoke();
+        if (!isPaused)
+        {
+            _currentTime += Time.fixedDeltaTime;
+            OnRoundTick?.Invoke();
+        }
     }
 
     public void StartRound()

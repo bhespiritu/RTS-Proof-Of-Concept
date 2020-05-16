@@ -504,3 +504,32 @@ public class FlowGrid
         return 1;
     }
 }
+
+public class PortalGraph
+{
+
+    public class PortalNode
+    {
+        int size;
+        int startIndex;
+        int side;//0 = top, 1 = right, 2 = down, left = 3
+
+        int gridX, gridY;//the gridspace it connects that is farther to the lower left.
+
+        bool enabled = true;//in case someone blocks off an area with buildings.
+    }
+
+    Dictionary<Vector2Int, PortalNode> graph;
+
+    public PortalNode[] GetNodesAt(Vector2Int input)
+    {
+        return GetNodeAt(input.x, input.y);
+    }
+
+    public PortalNode[] GetNodesAt(int x, int y)
+    {
+        int checkboardColor = (x + y) % 2;
+        return null;
+    }
+
+}
