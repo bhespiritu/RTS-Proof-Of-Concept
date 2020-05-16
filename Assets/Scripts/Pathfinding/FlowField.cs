@@ -199,7 +199,7 @@ public class FlowField : MonoBehaviour
             {
                 for(int j = 0; j < FlowGrid.gridResolution; j++)
                 {
-                    newGrid.integrationField[0, j] = lastGrid.integrationField[FlowGrid.gridResolution-1,j] + 1;
+                    newGrid.integrationField[0, j] = lastGrid.integrationField[FlowGrid.gridResolution-1,j]+1;
                     newGrid.dirtySquares.Add(new Vector2Int(0, j));//TODO carryover from the previous grid.
                 }
                 newGrid.compute();
@@ -212,7 +212,7 @@ public class FlowField : MonoBehaviour
             {
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
                 {
-                    newGrid.integrationField[FlowGrid.gridResolution - 1, j] = lastGrid.integrationField[0, j] + 1;
+                    newGrid.integrationField[FlowGrid.gridResolution - 1, j] = lastGrid.integrationField[0, j]+1;
                     newGrid.dirtySquares.Add(new Vector2Int(FlowGrid.gridResolution - 1, j));
                 }
                 newGrid.compute();
@@ -224,7 +224,7 @@ public class FlowField : MonoBehaviour
             {
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
                 {
-                    newGrid.integrationField[j, FlowGrid.gridResolution - 1] = lastGrid.integrationField[j, 0] + 1;
+                    newGrid.integrationField[j, FlowGrid.gridResolution - 1] = lastGrid.integrationField[j, 0]+1;
                     newGrid.dirtySquares.Add(new Vector2Int(j, FlowGrid.gridResolution - 1));
                 }
                 newGrid.compute();
@@ -236,7 +236,7 @@ public class FlowField : MonoBehaviour
             {
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
                 {
-                    newGrid.integrationField[j,0] = lastGrid.integrationField[j, FlowGrid.gridResolution - 1] + 1;
+                    newGrid.integrationField[j,0] = lastGrid.integrationField[j, FlowGrid.gridResolution - 1]+1;
                     newGrid.dirtySquares.Add(new Vector2Int(j,0));
                 }
                 newGrid.compute();
@@ -288,22 +288,22 @@ public class FlowField : MonoBehaviour
         grid = GameObject.FindObjectOfType<GridR>();
         testGrid.compute();
 
-        testRequest = requestPath(Vector2.zero, new Vector2(5,56));
+        testRequest = requestPath(Vector2.zero, new Vector2(32,32));
     }
 
 
-    public void Update()
+    public void OnDrawGizmos()
     {
         //return;
         foreach(KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
         {
-            Debug.Log(pair.Key);
             for (int i = 0; i < FlowGrid.gridResolution; i++)
             {
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
                 {
                     Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
-                    Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.integrationField[i,j]/50);
+                    //Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.integrationField[i,j]/50);
+                    Handles.Label(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x, 0, pair.Key.y), pair.Value.integrationField[i, j] + "");
                     Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x,0, pair.Key.y), dir*5);
                 }
             }
@@ -374,7 +374,7 @@ public class FlowGrid
         {
             for (int j = 0; j < gridResolution; j++)
             {
-                integrationField[i, j] = 2 * gridResolution * gridResolution;
+                integrationField[i, j] = 256;
                 directionField[i, j] = -1;
             }
         }
@@ -397,7 +397,7 @@ public class FlowGrid
                     {
                         int cost = getCost(next.x, next.y);
                         if (cost >= 255) continue;
-                        int newValue = integrationField[current.x, current.y] + getCost(next.x,next.y);
+                        int newValue = integrationField[current.x, current.y] + cost;
                         if(newValue < integrationField[next.x, next.y])
                         {
                             integrationField[next.x, next.y] = newValue;
@@ -499,10 +499,11 @@ public class FlowGrid
 
     public int getCost(int x, int y)
     {
-        //return 1;
+        return 1;
         int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)*10, (y + chunkY * gridResolution) *10);
-        
-        if (bld >= 0) return 256;
+        Debug.Log(new Vector2((x + chunkX * gridResolution) * 10, (y + chunkY * gridResolution) * 10));
+        Debug.Log(bld);
+        if (bld == 0) return 2;
         return 1;
     }
 }

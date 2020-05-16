@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    [Header("General Attributes")]
     public string name;
     public int health;
     public int healthregen;
@@ -15,7 +16,8 @@ public class Unit : MonoBehaviour
     public static float radarRadius;
     public static float sonarRadius;
     public int armor;
-    // Heat produced, negative if it takes heat from surroundings
+    // Heat produced, negative if it takes heat from surroundings\
+    [Header("Heat Attributes")]
     public int heatProd;
     public int currentHeat;
     public int heatMin;
@@ -26,6 +28,7 @@ public class Unit : MonoBehaviour
     public int energyProd;
 
     // Weapon information, need this for each weapon
+    [Header("Weapon Attributes")]
     public float projectileDmg;
     public float projectileSpd;
     public int projectileHeat;
