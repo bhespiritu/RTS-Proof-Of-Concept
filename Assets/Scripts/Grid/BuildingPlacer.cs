@@ -211,4 +211,9 @@ public class BuildingPlacer : MonoBehaviour
             building.place(build);
         }
     }
+
+    public Player getPlayer()
+    {
+        return player;
+    }
 }
