@@ -9,6 +9,7 @@ public class BuildingPlacer : MonoBehaviour
 {
 
     public GridR grid;
+    public Player player;
 
     public Material placeable;
     public Material unplaceable;

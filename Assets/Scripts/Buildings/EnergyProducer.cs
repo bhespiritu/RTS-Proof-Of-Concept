@@ -11,13 +11,15 @@ public class EnergyProducer : MonoBehaviour
     //Buff is the number of buffing buildings
     private int buff = 0;
     BuildingPlacer buildPlacer;
-    GridR grid;
+    private GridR grid;
+    private Player player;
     public bool isPlaced = false;
     // Start is called before the first frame update
     void Start()
     {
         buildPlacer = FindObjectOfType<BuildingPlacer>();
-        grid = buildPlacer.getGrid();        
+        grid = buildPlacer.getGrid();
+        player = buildPlacer.getPlayer();
     }
 
     public void place()

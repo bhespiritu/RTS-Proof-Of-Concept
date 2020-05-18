@@ -51,6 +51,7 @@ public class Building : MonoBehaviour
         return buildingPrefab;
     }
 
+    //Calls the placement function for each building type
     public void place(GameObject placement)
     {
         switch (bldInt)

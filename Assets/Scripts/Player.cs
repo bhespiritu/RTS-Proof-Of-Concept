@@ -42,4 +42,15 @@ public class Player : MonoBehaviour
     {
         return totalEnergy;
     }
+
+    //Recieve input of resources from producers
+    public void recieveMass(int mass)
+    {
+        totalMass += mass;
+    }
+
+    public void recieveEnergy(int energy)
+    {
+        totalEnergy += energy;
+    }
 }
