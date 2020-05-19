@@ -113,6 +113,12 @@ public class BuildingPlacer : MonoBehaviour
                 changeCursor();
             }
 
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                buildingPrefab = building.switchBuilding(4);
+                changeCursor();
+            }
+
             if (Input.GetKeyDown(KeyCode.A))
             {
                 Vector3 temp = cursor.transform.forward;
