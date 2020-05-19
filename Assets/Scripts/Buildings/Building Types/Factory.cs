@@ -72,7 +72,7 @@ public class Factory : MonoBehaviour
     /// <summary>
     /// called each frame to request energy from the player and to calculate the amount of work done
     /// </summary>
-    public void work()
+    public void work(float e)
     {
         
     }
