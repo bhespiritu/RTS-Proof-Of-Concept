@@ -161,9 +161,6 @@ public class BuildingPlacer : MonoBehaviour
         //plus 5 comes from the offset
         int bldType = grid.getBuilding(cursor.transform.position.x, cursor.transform.position.z);
         SortedSet<int> validTypes = getValidFoundations();
-        Debug.Log("The sorted set is: " + validTypes);
-        Debug.Log("bldtype is: " + bldType);
-        Debug.Log("bldtype in valid types: " + validTypes.Contains(bldType));
         if (validTypes.Contains(bldType))
         {
             

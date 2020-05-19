@@ -52,5 +52,5 @@ public class Player : MonoBehaviour
     public void recieveEnergy(int energy)
     {
         totalEnergy += energy;
-    }
+    }   
 }
