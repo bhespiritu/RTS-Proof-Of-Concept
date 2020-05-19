@@ -6,45 +6,50 @@ using UnityEditor;//TODO remove this
 
 
 /*
+ * Author: Noah Espiritu
+ * TODO: refactor everything in this. There are multiple types of grids involved, so the variable names are a bit confusing.
+ * /
+
+
+/*
  * I'll explain the algorithm in detail in the Github wiki
  */
 public class FlowField : MonoBehaviour
 {
     int mapSize = 16;
 
-    int targetX, targetY;
+    AStarPathfinding pathfinding = new AStarPathfinding();
+
+    public static PortalGraph navGraph;
 
     public static GridR grid;
 
-    ChunkNode[,] mapChunks;
+    GridDataChunk[,] mapData;
 
     public float chunkScale = 10;
-
-    public static FlowGrid testGrid;
+    
     public static PathRequest testRequest;
+    
 
-    private class ChunkNode
+    private class ChunkNode : AStarNode
     {
 
-        public ChunkNode(int x, int y)
+        public ChunkNode(int x, int y, int size)
         {
             gridPos = new Vector2Int(x, y);
+            mapSize = size;
         }
 
         public Vector2Int gridPos;
 
-        public ChunkNode parent;
+        int mapSize;
 
-        public int gCost = 0;
-        public int hCost = 0;
-
-        public int fCost
+        public override Vector2 getPosition()
         {
-            get
-            {
-                return gCost + hCost;
-            }
+            return gridPos;
         }
+
+ 
     }
 
     public PathRequest requestPath(Vector2 start, Vector2 end)
@@ -56,123 +61,17 @@ public class FlowField : MonoBehaviour
         int startChunkX = (int)(start.x / mapSize);
         int startChunkY = (int)(start.y / mapSize);
 
+
         int endChunkX = (int)(end.x / mapSize);
         int endChunkY = (int)(end.y / mapSize);
+        //TODO add in detection for which start nodes it has access to.
 
-        ChunkNode currentNode = mapChunks[startChunkX, startChunkY];
-        ChunkNode endNode = mapChunks[endChunkX, endChunkY];
-
-        List<ChunkNode> path = new List<ChunkNode>();
-
-        List<ChunkNode> openSet = new List<ChunkNode>();//TODO replace with Heap optimization
-        HashSet<ChunkNode> closedSet = new HashSet<ChunkNode>();
-
-
-        openSet.Add(currentNode);
-
-        while(openSet.Count > 0)
-        {
-            ChunkNode node = openSet[0];
-            for(int i = 1; i < openSet.Count; i++)
-            {
-                ChunkNode other = openSet[i];
-                if (other.fCost <= node.fCost)
-                {
-                    if (other.hCost < node.hCost)
-                        node = other;
-                }
-            }
-
-            openSet.Remove(node);
-            closedSet.Add(node);
-
-            if (node == endNode)
-            {
-                ChunkNode trace = endNode;
-
-                while(trace != currentNode)
-                {
-                    path.Add(trace);
-                    trace = trace.parent;
-                }
-                path.Add(currentNode);
-                break;
-            }
-
-            ChunkNode neighbor;
-            if (node.gridPos.y < mapSize - 1)
-            {
-                neighbor = mapChunks[node.gridPos.x, node.gridPos.y + 1];
-                if (!closedSet.Contains(neighbor))
-                {//up
-                    int newCost = node.gCost + 1;
-                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
-                    {
-                        neighbor.gCost = newCost;
-                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
-                        neighbor.parent = node;
-                        if (!openSet.Contains(neighbor))
-                            openSet.Add(neighbor);
-                    }
-                }
-            }
-            if (node.gridPos.x < mapSize - 1)
-            {
-                neighbor = mapChunks[node.gridPos.x + 1, node.gridPos.y];
-                if (!closedSet.Contains(neighbor))
-                {//right
-                    int newCost = node.gCost + 1;
-                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
-                    {
-                        neighbor.gCost = newCost;
-                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
-                        neighbor.parent = node;
-                        if (!openSet.Contains(neighbor))
-                            openSet.Add(neighbor);
-                    }
-                }
-            }
-
-            if (node.gridPos.y > 0)
-            {
-                neighbor = mapChunks[node.gridPos.x, node.gridPos.y - 1];
-                if (!closedSet.Contains(neighbor))
-                {//down
-                    int newCost = node.gCost + 1;
-                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
-                    {
-                        neighbor.gCost = newCost;
-                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
-                        neighbor.parent = node;
-                        if (!openSet.Contains(neighbor))
-                            openSet.Add(neighbor);
-                    }
-                }
-            }
-
-            if (node.gridPos.x > 0)
-            {
-                neighbor = mapChunks[node.gridPos.x - 1, node.gridPos.y];
-                if (!closedSet.Contains(neighbor))
-                {//left
-                    int newCost = node.gCost + 1;
-                    if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
-                    {
-                        neighbor.gCost = newCost;
-                        neighbor.hCost = (neighbor.gridPos - endNode.gridPos).sqrMagnitude;
-                        neighbor.parent = node;
-                        if (!openSet.Contains(neighbor))
-                            openSet.Add(neighbor);
-                    }
-                }
-            }
-
-        }
-
+        pathfinding.calculatePath(navGraph, navGraph.nodes[navGraph.associatedNodes[startChunkX, startChunkY][0]], navGraph.nodes[navGraph.associatedNodes[endChunkX, endChunkY][0]]);
+        List<AStarNode> path = pathfinding.path;
 
         FlowGrid finalGrid = new FlowGrid();
-        finalGrid.integrationField[(int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)] = 0;
-        finalGrid.dirtySquares.Add(new Vector2Int((int)(end.x / FlowGrid.gridResolution), (int)(end.y / FlowGrid.gridResolution)));
+        finalGrid.integrationField[(int)(end.x % FlowGrid.gridResolution), (int)(end.y % FlowGrid.gridResolution)] = 0;
+        finalGrid.dirtySquares.Add(new Vector2Int((int)(end.x % FlowGrid.gridResolution), (int)(end.y % FlowGrid.gridResolution)));
         finalGrid.compute();
         finalGrid.chunkX = endChunkX;
         finalGrid.chunkY = endChunkY;
@@ -181,79 +80,85 @@ public class FlowField : MonoBehaviour
         FlowGrid lastGrid = finalGrid;
         for (int i = 1; i < path.Count; i++)
         {
-            ChunkNode next = path[i-1];
-            ChunkNode current = path[i];
-            Vector2Int relative = next.gridPos - current.gridPos;
+            PortalGraph.PortalNode next = (PortalGraph.PortalNode) path[i-1];
+            PortalGraph.PortalNode current = (PortalGraph.PortalNode)path[i];
 
-
-            //temp visualization
-            var placeHolder = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            Vector3 position = new Vector3(current.gridPos.x, 0, current.gridPos.y)*16 + new Vector3(8, 0, 8);
-            placeHolder.transform.position = position*chunkScale;
-            placeHolder.transform.localScale = Vector3.one * 1.6f * chunkScale;
-            placeHolder.GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.green, (float)i / path.Count);
-           
-
-            FlowGrid newGrid = new FlowGrid();
-            if (relative.x == -1)//left
+            Vector2Int currGrid = new Vector2Int(current.gridX, current.gridY);
+            Vector2Int relative = (new Vector2Int(next.gridX, next.gridY) - currGrid);
+            if (!request.chunkSteps.ContainsKey(currGrid))
             {
-                for(int j = 0; j < FlowGrid.gridResolution; j++)
+                //temp visualization
+                var placeHolder = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                Vector3 position = new Vector3(currGrid.x, 0, currGrid.y) * 16 + new Vector3(8, 0, 8);
+                placeHolder.transform.position = position * chunkScale;
+                placeHolder.transform.localScale = Vector3.one * 1.6f * chunkScale;
+
+
+                FlowGrid newGrid = new FlowGrid();
+                if (relative.x < 0)//left
                 {
-                    newGrid.integrationField[0, j] = lastGrid.integrationField[FlowGrid.gridResolution-1,j]+1;
-                    newGrid.dirtySquares.Add(new Vector2Int(0, j));//TODO carryover from the previous grid.
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.integrationField[0, j] = lastGrid.integrationField[FlowGrid.gridResolution - 1, j] + 1;
+                        newGrid.dirtySquares.Add(new Vector2Int(0, j));//TODO carryover from the previous grid.
+                    }
+                    newGrid.compute();
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.directionField[0, j] = 6;
+                    }
                 }
-                newGrid.compute();
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
+                else if (relative.x > 0)//right
                 {
-                    newGrid.directionField[0, j] = 6;
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.integrationField[FlowGrid.gridResolution - 1, j] = lastGrid.integrationField[0, j] + 1;
+                        newGrid.dirtySquares.Add(new Vector2Int(FlowGrid.gridResolution - 1, j));
+                    }
+                    newGrid.compute();
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.directionField[FlowGrid.gridResolution - 1, j] = 2;
+                    }
                 }
+                else if (relative.y > 0)//up
+                {
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.integrationField[j, FlowGrid.gridResolution - 1] = lastGrid.integrationField[j, 0] + 1;
+                        newGrid.dirtySquares.Add(new Vector2Int(j, FlowGrid.gridResolution - 1));
+                    }
+                    newGrid.compute();
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.directionField[j, FlowGrid.gridResolution - 1] = 4;
+                    }
+                }
+                else if (relative.y < 0)//down
+                {
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.integrationField[j, 0] = lastGrid.integrationField[j, FlowGrid.gridResolution - 1] + 1;
+                        newGrid.dirtySquares.Add(new Vector2Int(j, 0));
+                    }
+                    newGrid.compute();
+                    for (int j = 0; j < FlowGrid.gridResolution; j++)
+                    {
+                        newGrid.directionField[j, 0] = 0;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Invalid Path Found");
+                }
+
+                newGrid.chunkX = currGrid.x;
+                newGrid.chunkY = currGrid.y;
+
+                request.chunkSteps.Add(currGrid, newGrid);
+
+                lastGrid = newGrid;
             }
-            else if (relative.x == 1)//right
-            {
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.integrationField[FlowGrid.gridResolution - 1, j] = lastGrid.integrationField[0, j]+1;
-                    newGrid.dirtySquares.Add(new Vector2Int(FlowGrid.gridResolution - 1, j));
-                }
-                newGrid.compute();
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.directionField[FlowGrid.gridResolution - 1, j] = 2;
-                }
-            } else if (relative.y == 1)//up
-            {
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.integrationField[j, FlowGrid.gridResolution - 1] = lastGrid.integrationField[j, 0]+1;
-                    newGrid.dirtySquares.Add(new Vector2Int(j, FlowGrid.gridResolution - 1));
-                }
-                newGrid.compute();
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.directionField[j, FlowGrid.gridResolution - 1] = 4;
-                }
-            } else if (relative.y == -1)//down
-            {
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.integrationField[j,0] = lastGrid.integrationField[j, FlowGrid.gridResolution - 1]+1;
-                    newGrid.dirtySquares.Add(new Vector2Int(j,0));
-                }
-                newGrid.compute();
-                for (int j = 0; j < FlowGrid.gridResolution; j++)
-                {
-                    newGrid.directionField[j,0] = 0;
-                }
-            } else
-            {
-                Debug.LogError("Invalid Path Found");
-            }
-
-            newGrid.chunkX = current.gridPos.x;
-            newGrid.chunkY = current.gridPos.y;
-            request.chunkSteps.Add(current.gridPos, newGrid);
-
-            lastGrid = newGrid;
         }
         
 
@@ -261,7 +166,7 @@ public class FlowField : MonoBehaviour
         Vector3 position2 = new Vector3(endChunkX, 0, endChunkY) * 16 + new Vector3(8, 0, 8);
         placeHolder2.transform.position = position2*chunkScale;
         placeHolder2.transform.localScale = Vector3.one * 1.6f * chunkScale;
-        placeHolder2.GetComponent<Renderer>().material.color = Color.red;
+        placeHolder2.name = "End";
 
         return request;
     }
@@ -269,34 +174,30 @@ public class FlowField : MonoBehaviour
 
     public void Awake()
     {
-        mapChunks = new ChunkNode[mapSize, mapSize];
-        for(int i = 0; i < mapSize; i++)
+        grid = FindObjectOfType<GridR>();//TODO replace
+        mapData = new GridDataChunk[mapSize, mapSize];
+        for (int i = 0; i < mapSize; i++)
         {
             for (int j = 0; j < mapSize; j++)
             {
-                mapChunks[i, j] = new ChunkNode(i, j);
+                mapData[i, j] = new GridDataChunk(FlowGrid.gridResolution, i, j);
             }
         }
 
-        testGrid = new FlowGrid();
-        for(int i = 0; i < FlowGrid.gridResolution; i++)
-        {
-            testGrid.integrationField[i, 15] = 0;
-            testGrid.dirtySquares.Add(new Vector2Int(i,15));
-        }
+        navGraph = generateGraph();
 
-        grid = GameObject.FindObjectOfType<GridR>();
-        testGrid.compute();
+        pathfinding = new AStarPathfinding();
 
-        testRequest = requestPath(Vector2.zero, new Vector2(32,32));
+        testRequest = requestPath(Vector2.zero, new Vector2(4,40));
     }
 
 
     public void OnDrawGizmos()
     {
-        //return;
-        foreach(KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
+
+        foreach (KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
         {
+
             for (int i = 0; i < FlowGrid.gridResolution; i++)
             {
                 for (int j = 0; j < FlowGrid.gridResolution; j++)
@@ -304,14 +205,331 @@ public class FlowField : MonoBehaviour
                     Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
                     //Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.integrationField[i,j]/50);
                     Handles.Label(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x, 0, pair.Key.y), pair.Value.integrationField[i, j] + "");
-                    Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x,0, pair.Key.y), dir*5);
+                    Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x, 0, pair.Key.y), dir * 5);
                 }
+            }
+        }
+        
+
+        foreach(PortalGraph.PortalNode node in navGraph.nodes)
+        {
+            bool horiz = node.isHorizontal;
+            Vector2 nodePos = node.getPosition();
+            Vector3 position = new Vector3(nodePos.x, 0 ,nodePos.y);
+            Vector3 size = Vector3.one * 5;
+            if(horiz)
+            {
+                size += Vector3.right * (node.size) * 10;
+            } else
+            {
+                size += Vector3.forward * (node.size) * 10;
+            }
+            Gizmos.DrawSphere(position, 6);
+            Gizmos.DrawCube(position, size);
+
+            foreach(int i in node.connectedNodes)
+            {
+                Vector2 nodePos2 = navGraph.nodes[i].getPosition();
+                Vector3 otherPos = new Vector3(nodePos2.x, 0, nodePos2.y);
+                Debug.DrawLine(position, otherPos);
             }
         }
     }
 
+    public PortalGraph generateGraph()
+    {
+        PortalGraph graph = new PortalGraph(mapSize);
+
+        for(int x = 0; x < 2*mapSize - 2; x++)
+        {
+            bool horiz = x % 2 == 0;
+            for (int y = 0; y < mapSize - 1 + (horiz ? -1 : 0); y++)
+            {
+                bool sideA;
+                bool sideB;
+
+                if(horiz)//TODO simplify these lines of code
+                {
+                    sideA = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * 10), (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10) == -1;
+                    sideB = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * 10), (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution) * 10) == -1;
+                } else
+                {
+                    sideA = FlowField.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10, y * FlowGrid.gridResolution * 10) == -1;
+                    sideB = FlowField.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution) * 10, y * FlowGrid.gridResolution * 10) == -1;
+                }
 
 
+                bool foundPortal = sideA && sideB;
+
+                int startIndex = -1;
+                int size = -1;
+
+                if(foundPortal)
+                {
+                    startIndex = 0;
+                    size = 1;
+                } 
+
+                for(int i = 1; i < FlowGrid.gridResolution; i++)
+                {
+                    if (horiz)
+                    {
+                        sideA = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * 10) + i*10, (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10) == -1;
+                        sideB = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * 10) + i*10, (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution) * 10) == -1;
+                    }
+                    else
+                    {
+                        sideA = FlowField.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10, y * FlowGrid.gridResolution * 10 + i*10) == -1;
+                        sideB = FlowField.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution) * 10, y * FlowGrid.gridResolution * 10 + i*10) == -1;
+                    }
+
+                    if (sideA && sideB)
+                    {
+                        if(foundPortal)
+                        {
+                            size++;
+                        } else
+                        {
+                            foundPortal = true;
+                            startIndex = i;
+                            size = 1;
+                        }
+                    } else
+                    {
+                        if(foundPortal)
+                        {
+                            foundPortal = false;
+
+                            graph.AddPortal(x,y,size,startIndex);
+
+                        }
+                    }
+                }
+                if(foundPortal)
+                {
+                    graph.AddPortal(x, y, size, startIndex);
+                }
+            }
+        }
+
+        for (int x = 0; x < mapSize; x++)
+        {
+            for (int y = 0; y < mapSize; y++)
+            {
+                List<int> portalIndices = graph.associatedNodes[x, y];
+                for (int i = 0; i < portalIndices.Count; i++)
+                {
+                    int startX;
+                    int startY;
+                    int startIndex = portalIndices[i];
+
+                    PortalGraph.PortalNode start = graph.nodes[i];
+                    bool isHoriz = start.isHorizontal;
+                    if(isHoriz)
+                    {
+                        startX = start.startIndex;
+                        startY = (start.side ? 0 : FlowGrid.gridResolution - 1);
+                    } else
+                    {
+                        startY = start.startIndex;
+                        startX = (start.side ? 0 : FlowGrid.gridResolution - 1);
+                    }
+                    for (int j = i+1; j < portalIndices.Count; j++)
+                    {
+                        int targetX;
+                        int targetY;
+                        int targetIndex = portalIndices[j];
+
+                        PortalGraph.PortalNode target = graph.nodes[j];
+                        isHoriz = target.isHorizontal;
+                        if (isHoriz)
+                        {
+                            targetX = target.startIndex;
+                            targetY = (target.side ? 0 : FlowGrid.gridResolution - 1);
+                        }
+                        else
+                        {
+                            targetY = target.startIndex;
+                            targetX = (target.side ? 0 : FlowGrid.gridResolution - 1);
+                        }
+                        Debug.Log(startX + " " + startY + " " + targetX + " " + targetY);
+                        bool foundPath = pathfinding.calculatePath(mapData[x,y], mapData[x,y].AStarGrid[startX,startY], mapData[x, y].AStarGrid[targetX, targetY]);
+                        if(foundPath)
+                        {
+                            graph.Connect(startIndex, targetIndex);
+                        }
+
+                    }
+                }
+               
+            }
+        }
+
+        return graph;
+    }
+
+  
+}
+
+//TODO: add a way to detect when two portals are cut off
+public class PortalGraph : NodeData
+{
+
+    int mapSize;
+
+    public PortalGraph(int mapSize)
+    {
+        associatedNodes = new List<int>[mapSize,mapSize];
+        nodes = new List<PortalNode>();
+        this.mapSize = mapSize;
+        for(int x = 0; x < mapSize; x++)
+        {
+            for (int y = 0; y < mapSize; y++)
+            {
+                associatedNodes[x, y] = new List<int>();
+            }
+        }
+    }
+
+    public class PortalNode : AStarNode
+    {
+        public int size;
+        public int startIndex;
+
+        public HashSet<int> connectedNodes = new HashSet<int>();
+
+        public int gridX, gridY;
+        public bool side;//false means it's on the upper/right-er end of the square
+
+        public bool isHorizontal
+        {
+            get
+            {
+                return gridX % 2 == 0;
+            }
+        }
+
+
+        public PortalNode(int x, int y, int size, int start, bool side)
+        {
+            gridX = x;
+            gridY = y;
+            this.size = size;
+            startIndex = start;
+            this.side = side;
+        }
+
+
+
+        public override Vector2 getPosition()
+        {
+            bool horiz = isHorizontal;
+            Vector2 position = new Vector3(16 * (gridX / 2 + (horiz ? 0 : 1) - (side && !horiz ? 1 : 0)), 16 * (gridY + (horiz ? 1 : 0) - (side && horiz ? 1 : 0))) * 10;//I'm too lazy to simplify this
+            if (horiz)
+            {
+                position += Vector2.right * 10 * (startIndex + size / 2);
+                position += Vector2.up * (side ? 1 : -1) * 5;
+            }
+            else
+            {
+                position += Vector2.up * 10 * (startIndex + size / 2);
+                position += Vector2.right * (side ? 1 : -1) * 5;
+            }
+            return position;
+        }
+    }
+
+    public List<int>[,] associatedNodes;//stores all nodes that are connected to some gridspace
+
+    public List<PortalNode> nodes;
+
+    public PortalNode[] GetNodesAt(Vector2Int input)
+    {
+        return GetNodesAt(input.x, input.y);
+    }
+
+    public PortalNode[] GetNodesAt(int x, int y)
+    {
+        List<int> nodeIndices = associatedNodes[x, y];
+        PortalNode[] output = new PortalNode[nodeIndices.Count];
+
+        int i = 0;
+        foreach(int nodeIndex in nodeIndices)
+        {
+            output[i++] = nodes[nodeIndex];
+        }
+        return output;
+    }
+
+
+    public void AddPortal(int x, int y, int size, int start)
+    {
+        PortalNode node = new PortalNode(x, y, size, start, false);
+        int index = nodes.Count;
+        nodes.Add(node);
+        
+
+        if (x % 2 == 0)
+        {
+            associatedNodes[x, y].Add(index);
+            node = new PortalNode(x, y+1, size, start, true);
+            index++;
+            nodes.Add(node);
+            associatedNodes[x, y+1].Add(index);
+        } else
+        {
+            associatedNodes[x-1, y].Add(index);
+            node = new PortalNode(x+2, y, size, start, true);
+            index++;
+            nodes.Add(node);
+            associatedNodes[x+1, y].Add(index);
+        }
+
+        Connect(index, index - 1);
+    }
+
+    private void AddNode(int x, int y, int size, int start, bool side)
+    {
+        PortalNode node = new PortalNode(x,y,size,start, side);
+        int index = nodes.Count;
+        nodes.Add(node);
+    }
+
+    public void Connect(int i, int j)
+    {
+        PortalNode nodeA = nodes[i];
+        PortalNode nodeB = nodes[j];
+        nodeA.connectedNodes.Add(j);
+        nodeB.connectedNodes.Add(i);
+    }
+
+    public string toString()
+    {
+        return "";
+    }
+
+    public void readFrom(String s)
+    {
+
+    }
+
+    public override void getNeighbors(AStarNode node, ref List<AStarNode> neighbors)
+    {
+        PortalNode pNode = (PortalNode)node;
+        foreach(int i in pNode.connectedNodes)
+        {
+            neighbors.Add(nodes[i]);
+        }
+    }
+
+    public override void resetNodes()
+    {
+        foreach(PortalNode node in nodes)
+        {
+            node.gCost = 0;
+            node.hCost = 0;
+        }
+    }
 }
 
 
@@ -362,6 +580,7 @@ public class FlowGrid
 
     public FlowGrid()
     {
+
         dirtySquares = new List<Vector2Int>();
         integrationField = new int[gridResolution,gridResolution];
         directionField = new int[gridResolution,gridResolution];
@@ -499,40 +718,102 @@ public class FlowGrid
 
     public int getCost(int x, int y)
     {
-        return 1;
-        int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)*10, (y + chunkY * gridResolution) *10);
-        Debug.Log(new Vector2((x + chunkX * gridResolution) * 10, (y + chunkY * gridResolution) * 10));
-        Debug.Log(bld);
-        if (bld == 0) return 2;
+        //return 1;//undo once I figure out why Roger's code isn't working
+        int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)*10, (y + chunkY * gridResolution) * 10);
+        //Debug.Log((x + chunkX * gridResolution) * 10 + " " + (y + chunkY * gridResolution) * 10  + " " + bld);
+        if (bld == 0) return 256;
         return 1;
     }
+
+    
+
 }
 
-public class PortalGraph
+public class GridDataChunk : NodeData
 {
 
-    public class PortalNode
+    int gridResolution;
+
+    public FlowGridNode[,] AStarGrid;
+
+    int chunkX, chunkY;
+
+    public GridDataChunk(int res, int cx, int cy)
     {
-        int size;
-        int startIndex;
-        int side;//0 = top, 1 = right, 2 = down, left = 3
-
-        int gridX, gridY;//the gridspace it connects that is farther to the lower left.
-
-        bool enabled = true;//in case someone blocks off an area with buildings.
+        chunkX = cx;
+        chunkY = cy;
+        gridResolution = res;
+        AStarGrid = new FlowGridNode[res, res];
+        for (int x = 0; x < res; x++)
+        {
+            for (int y = 0; y < res; y++)
+            {
+                AStarGrid[x, y] = new FlowGridNode(x, y);
+            }
+        }
+        
     }
 
-    Dictionary<Vector2Int, PortalNode> graph;
-
-    public PortalNode[] GetNodesAt(Vector2Int input)
+    public override void getNeighbors(AStarNode node, ref List<AStarNode> neighbors)
     {
-        return GetNodesAt(input.x, input.y);
+        FlowGridNode fgNode = (FlowGridNode)node;
+        int x = fgNode.x;
+        int y = fgNode.y;
+
+        //TODO: add in obstacle detection when I figure out roger's code
+        if (x > 0)
+        {
+            if(FlowField.grid.getBuilding((x - 1 + chunkX * gridResolution) * 10, (y + chunkY * gridResolution) * 10) == -1)
+                neighbors.Add(AStarGrid[x - 1, y]);
+        }
+        if (y > 0)
+        {
+            if (FlowField.grid.getBuilding((x + chunkX * gridResolution) * 10, (y - 1 + chunkY * gridResolution) * 10) == -1)
+                neighbors.Add(AStarGrid[x, y - 1]);
+        }
+        if (x < gridResolution - 1)
+        {
+            if (FlowField.grid.getBuilding((x + 1 + chunkX * gridResolution) * 10, (y + chunkY * gridResolution) * 10) == -1)
+                neighbors.Add(AStarGrid[x + 1, y]);
+        }
+        if (y < gridResolution - 1)
+        {
+            if (FlowField.grid.getBuilding((x + chunkX * gridResolution) * 10, (y + 1 + chunkY * gridResolution) * 10) == -1)
+                neighbors.Add(AStarGrid[x, y + 1]);
+        }
     }
 
-    public PortalNode[] GetNodesAt(int x, int y)
+
+    public override void resetNodes()
     {
-        int checkboardColor = (x + y) % 2;
-        return null;
+        for (int i = 0; i < gridResolution; i++)
+        {
+            for (int j = 0; j < gridResolution; j++)
+            {
+                FlowGridNode node = AStarGrid[i, j];
+                node.gCost = 0;
+                node.hCost = 0;
+            }
+        }
     }
 
+    public class FlowGridNode : AStarNode
+    {
+
+        public int x, y;
+
+        public FlowGridNode(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+
+        }
+
+
+        public override Vector2 getPosition()
+        {
+            return new Vector2(x, y);
+        }
+    }
 }
+
