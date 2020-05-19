@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -19,15 +20,21 @@ public class Player : MonoBehaviour
     void Awake()
     {
         requests = new List<Requester>();
-        Debug.Log("Length is: " + requests.Count);
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("energy requested is: " + energyRequested);
+        Debug.Log("Length of requests is: " + requests.Count);
         if (energyRequested != 0)
         {
             spendEnergy();
+        }
+        //Conditional to try to slap a fix on an error
+        if(energyRequested == 0)
+        {
+            requests.Clear();
         }
     }
 
@@ -38,7 +45,6 @@ public class Player : MonoBehaviour
 
     public void spendEnergy()
     {
-        Debug.Log("Spending Energy");
         int curE = totalEnergy;
         int curReq = energyRequested;
         if(curReq <= curE)
@@ -87,22 +93,27 @@ public class Player : MonoBehaviour
 
     public void energyRequest(Requester r, int e)
     {
-        Debug.Log("Requested");
-        requests.Add(r);
-        energyRequested += e;
+        if (!requests.Contains(r))
+        {
+            requests.Add(r);
+            Debug.Log("Requesting more energy: " + e);
+            energyRequested += e;
+        }
     }
 
     //e is a percent 0-1
     private void distributeEnergy(float e)
     {
         List<Requester> tempReq = requests;
-        Debug.Log("Count is: " + requests.Count);
+        Debug.Log("length of tempReq is: " + tempReq.Count);
         if (tempReq.Count != 0)
         {
             foreach (Requester r in tempReq)
             {
                 r.giveEnergy(e);
                 requests.Remove(r);
+                Debug.Log("Length of requests after removal is: " + requests.Count);
+
             }
         }
     }

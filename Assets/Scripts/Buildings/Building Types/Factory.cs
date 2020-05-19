@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UI;
 using UnityEngine;
 
 public class Factory : MonoBehaviour
@@ -16,6 +17,12 @@ public class Factory : MonoBehaviour
     public Player player;
     public Unit unit;
 
+
+    private MeshRenderer mesh;
+    private MeshRenderer childMesh;
+    private Material notConstructed;
+    private Material finishedConstructing;
+
     public int health;
 
     [SerializeField]
@@ -24,6 +31,7 @@ public class Factory : MonoBehaviour
     private bool producing = false;
     private bool isPlaced = false;
     private int progress;
+    private bool constructed = false;
 
     BuildingPlacer buildPlacer;
     GridR grid;
@@ -36,7 +44,12 @@ public class Factory : MonoBehaviour
         buildPlacer = FindObjectOfType<BuildingPlacer>();
         grid = buildPlacer.GetComponent<GridR>();
         request = gameObject.GetComponent<Requester>();
-        build();
+        mesh = gameObject.GetComponent<MeshRenderer>();
+        //Todo make this a method
+        notConstructed = buildPlacer.notConstructed;
+        finishedConstructing = buildPlacer.finishedConstructing;
+        changeMesh(notConstructed);
+        buildSelf();
     }
 
     // Update is called once per frame
@@ -44,10 +57,15 @@ public class Factory : MonoBehaviour
     {
         if (isPlaced)
         {
+            if (!constructed)
+            {
+                Debug.Log("Factory requests energy for self: " + energyCostPS);
+                player.energyRequest(request, energyCostPS);
+            }
             if (producing)
             {
+                Debug.Log("Factory requests energy for unit: " + energyCostPS);
                 //Request Energy
-                Debug.Log("Requesting Energy");
                 player.energyRequest(request, energyCostPS);
             }
         }
@@ -83,9 +101,14 @@ public class Factory : MonoBehaviour
     {
         return energyCostPS;
     }
-    // Start is called before the first frame update
-    
-    //Probably will take in a unit type as an argument
+ 
+    //Used when the factory is being constructed
+    public void buildSelf()
+    {
+        energyCostTotal = 10000;
+        energyCostPS = 50;
+        progress = 0;
+    }
     public void build()
     {
         producing = true;
@@ -105,8 +128,6 @@ public class Factory : MonoBehaviour
     /// </summary>
     public void work(float e)
     {
-        Debug.Log("Working...: " + progress);
-        Debug.Log("E is : " + e);
         if (e * energyCostPS + progress >= energyCostTotal)
         {
             player.recieveEnergy((int)e * energyCostPS + progress - energyCostTotal);
@@ -119,9 +140,30 @@ public class Factory : MonoBehaviour
     }
     private void finish()
     {
+        if (constructed)
+        {
+            producing = false;
+            GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
+            unit.AddComponent<Unit>();
+        }
+        else
+        {
+            constructed = true; 
+            changeMesh(finishedConstructing);
+            build();
+        }
         Debug.Log("Finish");
-        producing = false;
-        GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
-        unit.AddComponent<Unit>();
+        
+    }
+    private void changeMesh(Material m)
+    {
+        Debug.Log(m);
+        mesh.material = m;
+        foreach (Transform child in gameObject.transform)
+        {
+            child.gameObject.layer = 8;
+            childMesh = child.GetComponent<MeshRenderer>();
+            childMesh.material = m;
+        }
     }
 }

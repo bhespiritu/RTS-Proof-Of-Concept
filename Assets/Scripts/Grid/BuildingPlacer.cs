@@ -13,6 +13,8 @@ public class BuildingPlacer : MonoBehaviour
 
     public Material placeable;
     public Material unplaceable;
+    public Material notConstructed;
+    public Material finishedConstructing;
 
     private GameObject buildingPrefab;
 
@@ -26,6 +28,8 @@ public class BuildingPlacer : MonoBehaviour
     public LayerMask buildingsLayerMask;
 
     private Building building;
+
+    
     private void Awake() {
 
         //Find the prefab from building

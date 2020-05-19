@@ -4,20 +4,23 @@ using UnityEngine;
 
 public class Building : MonoBehaviour
 {
-    // Start is called before the first frame update
     public GameObject buildingPrefab;
     public GameObject buildingPrefab1;
     public GameObject buildingPrefab2;
     public GameObject buildingPrefab3;
     public GameObject buildingPrefab4;
 
+    
+
     public Player player;
 
 
     public int bldInt = 1;
-    private void Start()
+    // Start is called before the first frame update
+    private void Awake()
     {
-       buildingPrefab = buildingPrefab1;
+        buildingPrefab = buildingPrefab1;
+        bldInt = 1;
     }
 
     private void Update()
