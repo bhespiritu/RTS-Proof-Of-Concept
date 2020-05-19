@@ -191,6 +191,10 @@ public class BuildingPlacer : MonoBehaviour
         {
             return producer.getValidFoundation();
         }
+        if (cursor.TryGetComponent<Factory>(out Factory factory))
+        {
+            return factory.getValidFoundation();
+        }
         return new SortedSet<int> { };
     }
     

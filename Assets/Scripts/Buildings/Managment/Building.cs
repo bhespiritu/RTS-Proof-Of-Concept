@@ -9,6 +9,8 @@ public class Building : MonoBehaviour
     public GameObject buildingPrefab1;
     public GameObject buildingPrefab2;
     public GameObject buildingPrefab3;
+    public GameObject buildingPrefab4;
+
     public Player player;
 
 
@@ -48,6 +50,10 @@ public class Building : MonoBehaviour
                 bldInt = 3;
                 buildingPrefab = buildingPrefab3;
                 break;
+            case 4:
+                bldInt = 4;
+                buildingPrefab = buildingPrefab4;
+                break;
         }
         return buildingPrefab;
     }
@@ -65,6 +71,9 @@ public class Building : MonoBehaviour
                 break;
             case 3:
                 placement.GetComponent<Producer>().place();
+                break;
+            case 4:
+                placement.GetComponent<Factory>().place(player);
                 break;
         }
     }
