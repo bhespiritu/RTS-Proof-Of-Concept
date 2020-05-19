@@ -10,6 +10,9 @@ public class Factory : MonoBehaviour
     private int energyCostTotal;
     private int unitTotalCost = 0;
     private int unitCostPerFrame = 0;
+    public GameObject unit1;
+    public Player controller;
+    public int health;
 
     BuildingPlacer buildPlacer;
     GridR grid;
