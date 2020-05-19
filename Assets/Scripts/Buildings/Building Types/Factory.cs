@@ -10,12 +10,22 @@ public class Factory : MonoBehaviour
     private int energyCostTotal;
     private int unitTotalCost = 0;
     private int unitCostPerFrame = 0;
+
     public GameObject unit1;
     public Player player;
+    public Unit unit;
+
     public int health;
+
+    [SerializeField]
+    public Requester request;
+
+    private bool producing = false;
+    private int progress;
 
     BuildingPlacer buildPlacer;
     GridR grid;
+
     private SortedSet<int> placeable = new SortedSet<int> { -1 };
 
     // Start is called before the first frame update
@@ -26,9 +36,13 @@ public class Factory : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-
+        if (producing)
+        {
+            //Request Energy
+            player.energyRequest(request,energyCostPS);
+        }
     }
 
     //Should return a cost to build this unit.
@@ -59,14 +73,22 @@ public class Factory : MonoBehaviour
     public int getEnergyCostPS()
     {
         return energyCostPS;
-    }// Start is called before the first frame update
+    }
+    // Start is called before the first frame update
     
     //Probably will take in a unit type as an argument
     public void build()
     {
+        producing = true;
         //Get the unit cost
-        
+
+        //Replace with actual stuff
+        energyCostTotal = 500;
+        energyCostPS = 1;
+
         //Set the build percentage to 0
+        progress = 0;
+
     }
 
     /// <summary>
@@ -74,6 +96,20 @@ public class Factory : MonoBehaviour
     /// </summary>
     public void work(float e)
     {
+
+        if(e * energyCostPS + progress >= 100)
+        {
+            player.recieveEnergy((int)e * energyCostPS + progress - 100);
+            finish();
+        }
+        else
+        {
+            progress += (int)(e * energyCostPS);
+        }
+    }
+    private void finish()
+    {
+        producing = false;
         
     }
 }

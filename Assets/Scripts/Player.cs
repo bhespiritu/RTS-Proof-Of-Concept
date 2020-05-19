@@ -10,7 +10,9 @@ public class Player : MonoBehaviour
     public int maxEnergy = 5000;
     public int maxMass;
     public ulong score;
+    private int energyRequested = 0;
 
+    private List<Requester> requests;
     
 
     // Start is called before the first frame update
@@ -30,9 +32,22 @@ public class Player : MonoBehaviour
         totalMass -= amount;
     }
 
-    public void spendEnergy(int amount)
+    public void spendEnergy()
     {
-        totalEnergy -= amount;
+        int curE = totalEnergy;
+        int curReq = energyRequested;
+        if(curReq <= curE)
+        {
+            totalEnergy -= curReq;
+            distributeEnergy(1);
+        }
+        else
+        {
+            distributeEnergy(curE / curReq);
+            totalEnergy -= curE;
+        }
+
+
     }
 
     public int getMass()
@@ -60,6 +75,21 @@ public class Player : MonoBehaviour
         else
         {
             totalEnergy += energy;
+        }
+    }
+
+    public void energyRequest(Requester r, int e)
+    {
+        requests.Add(r);
+        energyRequested += e;
+    }
+
+    //e is a percent 0-1
+    private void distributeEnergy(float e)
+    {
+        foreach(Requester r in requests)
+        {
+            r.giveEnergy(e);
         }
     }
 }
