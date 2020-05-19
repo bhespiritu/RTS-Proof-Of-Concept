@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EnergyProducer : MonoBehaviour
 {
-    private int eps = 15;
+    private int eps = 100;
     private int bld = 4;
     private SortedSet<int> placeable = new SortedSet<int> { -1 };
     //Buff is the number of buffing buildings

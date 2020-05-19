@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
     public int totalMass;
     public int totalEnergy = 0;
     public int totalUnits;
-    public int maxEnergy = 5000;
+    public int maxEnergy = 200000000;
     public int maxMass;
     public ulong score;
     private int energyRequested = 0;
@@ -16,15 +16,19 @@ public class Player : MonoBehaviour
     
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        requests = new List<Requester>();
+        Debug.Log("Length is: " + requests.Count);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (energyRequested != 0)
+        {
+            spendEnergy();
+        }
     }
 
     public void spendMass(int amount)
@@ -34,17 +38,20 @@ public class Player : MonoBehaviour
 
     public void spendEnergy()
     {
+        Debug.Log("Spending Energy");
         int curE = totalEnergy;
         int curReq = energyRequested;
         if(curReq <= curE)
         {
             totalEnergy -= curReq;
+            energyRequested -= curReq;
             distributeEnergy(1);
         }
         else
         {
             distributeEnergy(curE / curReq);
             totalEnergy -= curE;
+            energyRequested -= curReq;
         }
 
 
@@ -80,6 +87,7 @@ public class Player : MonoBehaviour
 
     public void energyRequest(Requester r, int e)
     {
+        Debug.Log("Requested");
         requests.Add(r);
         energyRequested += e;
     }
@@ -87,9 +95,15 @@ public class Player : MonoBehaviour
     //e is a percent 0-1
     private void distributeEnergy(float e)
     {
-        foreach(Requester r in requests)
+        List<Requester> tempReq = requests;
+        Debug.Log("Count is: " + requests.Count);
+        if (tempReq.Count != 0)
         {
-            r.giveEnergy(e);
+            foreach (Requester r in tempReq)
+            {
+                r.giveEnergy(e);
+                requests.Remove(r);
+            }
         }
     }
 }

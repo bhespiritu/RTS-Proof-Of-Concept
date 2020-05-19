@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Requester : MonoBehaviour
 {
-    public GameObject self;
     // Start is called before the first frame update
     void Start()
     {

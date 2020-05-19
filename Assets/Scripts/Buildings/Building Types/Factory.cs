@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Factory : MonoBehaviour
 {
+    private int bld = 5;
     private int cost;
     private int costPS;
     private int energyCostPS;
@@ -21,6 +22,7 @@ public class Factory : MonoBehaviour
     public Requester request;
 
     private bool producing = false;
+    private bool isPlaced = false;
     private int progress;
 
     BuildingPlacer buildPlacer;
@@ -33,21 +35,28 @@ public class Factory : MonoBehaviour
     {
         buildPlacer = FindObjectOfType<BuildingPlacer>();
         grid = buildPlacer.GetComponent<GridR>();
+        request = gameObject.GetComponent<Requester>();
+        build();
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        if (producing)
+        if (isPlaced)
         {
-            //Request Energy
-            player.energyRequest(request,energyCostPS);
+            if (producing)
+            {
+                //Request Energy
+                Debug.Log("Requesting Energy");
+                player.energyRequest(request, energyCostPS);
+            }
         }
     }
 
     //Should return a cost to build this unit.
     public void place(Player p)
     {
+        isPlaced = true;
         player = p;
         // use for if we need to do anything when pylons are placed.
     }
@@ -96,10 +105,11 @@ public class Factory : MonoBehaviour
     /// </summary>
     public void work(float e)
     {
-
-        if(e * energyCostPS + progress >= 100)
+        Debug.Log("Working...: " + progress);
+        Debug.Log("E is : " + e);
+        if (e * energyCostPS + progress >= energyCostTotal)
         {
-            player.recieveEnergy((int)e * energyCostPS + progress - 100);
+            player.recieveEnergy((int)e * energyCostPS + progress - energyCostTotal);
             finish();
         }
         else
@@ -109,7 +119,9 @@ public class Factory : MonoBehaviour
     }
     private void finish()
     {
+        Debug.Log("Finish");
         producing = false;
-        
+        GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
+        unit.AddComponent<Unit>();
     }
 }
