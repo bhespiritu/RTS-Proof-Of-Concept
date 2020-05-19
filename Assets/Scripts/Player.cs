@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
             spendEnergy();
         }
         //Conditional to try to slap a fix on an error
+        //Basically ensures that if energyRequested is 0 there shouldn't be any requests. This should just be true, but it isn't.
         if(energyRequested == 0)
         {
             requests.Clear();
