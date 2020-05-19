@@ -19,11 +19,11 @@ public class EnergyProducer : MonoBehaviour
     {
         buildPlacer = FindObjectOfType<BuildingPlacer>();
         grid = buildPlacer.getGrid();
-        player = buildPlacer.getPlayer();
     }
 
-    public void place()
+    public void place(Player p)
     {
+        player = p;
         isPlaced = true;
     }
 
@@ -33,10 +33,7 @@ public class EnergyProducer : MonoBehaviour
         if (isPlaced)
         {
             buff = checkAdj();
-            if (Input.GetMouseButtonDown(0))
-            {
-                Debug.Log("Production is: " + production());
-            }
+            player.recieveEnergy(production());
         }
     }
 

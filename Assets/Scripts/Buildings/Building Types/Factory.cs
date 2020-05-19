@@ -11,7 +11,7 @@ public class Factory : MonoBehaviour
     private int unitTotalCost = 0;
     private int unitCostPerFrame = 0;
     public GameObject unit1;
-    public Player controller;
+    public Player player;
     public int health;
 
     BuildingPlacer buildPlacer;
@@ -32,8 +32,9 @@ public class Factory : MonoBehaviour
     }
 
     //Should return a cost to build this unit.
-    public void place()
+    public void place(Player p)
     {
+        player = p;
         // use for if we need to do anything when pylons are placed.
     }
 

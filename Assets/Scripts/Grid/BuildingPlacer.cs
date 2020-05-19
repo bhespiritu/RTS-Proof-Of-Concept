@@ -30,6 +30,7 @@ public class BuildingPlacer : MonoBehaviour
 
         //Find the prefab from building
         building = FindObjectOfType<Building>();
+        building.givePlayer(player);
         buildingPrefab = building.getBuildingPrefab();
         //Find the grid, stores information about whether a space is placeable
         //Glowy construct of where the building will be placed
@@ -209,8 +210,4 @@ public class BuildingPlacer : MonoBehaviour
         }
     }
 
-    public Player getPlayer()
-    {
-        return player;
-    }
 }

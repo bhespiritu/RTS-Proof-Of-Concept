@@ -9,6 +9,7 @@ public class Building : MonoBehaviour
     public GameObject buildingPrefab1;
     public GameObject buildingPrefab2;
     public GameObject buildingPrefab3;
+    public Player player;
 
 
     public int bldInt = 1;
@@ -57,7 +58,7 @@ public class Building : MonoBehaviour
         switch (bldInt)
         {
             case 1:
-                placement.GetComponent<EnergyProducer>().place();
+                placement.GetComponent<EnergyProducer>().place(player);
                 break;
             case 2:
                 placement.GetComponent<Pylon>().place();
@@ -66,5 +67,10 @@ public class Building : MonoBehaviour
                 placement.GetComponent<Producer>().place();
                 break;
         }
+    }
+
+    public void givePlayer(Player p)
+    {
+        player = p;
     }
 }

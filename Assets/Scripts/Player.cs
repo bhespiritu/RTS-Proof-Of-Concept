@@ -5,8 +5,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int totalMass;
-    public int totalEnergy;
+    public int totalEnergy = 0;
     public int totalUnits;
+    public int maxEnergy = 5000;
+    public int maxMass;
     public ulong score;
 
     
@@ -51,6 +53,13 @@ public class Player : MonoBehaviour
 
     public void recieveEnergy(int energy)
     {
-        totalEnergy += energy;
-    }   
+        if (totalEnergy + energy >= maxEnergy)
+        {
+            totalEnergy = maxEnergy;
+        }
+        else
+        {
+            totalEnergy += energy;
+        }
+    }
 }

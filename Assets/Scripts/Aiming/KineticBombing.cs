@@ -16,6 +16,7 @@ public class KineticBombing : MonoBehaviour
     public float dropTime(Vector3 v1, Vector3 v2, Vector3 targetVelocity)
     {
         float grav = 9.8f;
+        return 0;
     }
 
     // Update is called once per frame

@@ -101,6 +101,8 @@ public class KDTree {
             }
 
         }
+        //TODO: Actually, replace this with good code
+        return 0;
 
     }
 
