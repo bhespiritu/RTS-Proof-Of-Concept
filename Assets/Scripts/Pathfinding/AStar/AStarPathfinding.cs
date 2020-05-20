@@ -34,7 +34,6 @@ public class AStarPathfinding
         Vector2 target = last.getPosition();
 
         openSet.Add(start);
-        bool foundPath = false;
         while(openSet.Count > 0)
         {
             AStarNode node = openSet[0];
@@ -61,8 +60,7 @@ public class AStarPathfinding
                     trace = trace.parent;
                 }
                 path.Add(start);
-                foundPath = true;
-                break;
+                return true;
             }
 
             neighbors.Clear();
@@ -89,7 +87,7 @@ public class AStarPathfinding
         }
 
 
-        return foundPath;
+        return false;
     }
 
 
