@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField]
     Image selectionImage;
@@ -58,11 +58,7 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     {
         if (!Input.GetKey(KeyCode.LeftControl))
         {
-            foreach (Selectable s in selected)
-            {
-                s.GetComponent<Renderer>().material = unselectedMat;
-            }
-            selected.Clear();
+            DeselectAll();
         }
 
         selectionImage.gameObject.SetActive(false);
@@ -72,10 +68,51 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
             Vector3 screenPos = Camera.main.WorldToScreenPoint(s.transform.position);
             if(selectRect.Contains(screenPos))
             {
-                selected.Add(s);
-                s.GetComponent<Renderer>().material = selectedMat;
+                Select(s);
             }
         }
     }
 
+    private RaycastHit clickCast = new RaycastHit();
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        
+        if (!Input.GetKey(KeyCode.LeftControl))
+        {
+            DeselectAll();
+        }
+
+        Ray clickWorldRay = Camera.main.ScreenPointToRay(eventData.position);
+        if (Physics.Raycast(clickWorldRay, out clickCast))
+        {
+            Selectable s = clickCast.transform.GetComponent<Selectable>();
+            if(s)
+            {
+                Select(s);
+            }
+        }
+    }
+
+    public void Select(Selectable s)
+    {
+        selected.Add(s);
+        s.GetComponent<Renderer>().material = selectedMat;
+    }
+
+
+    public void Deselect(Selectable s)
+    {
+        selected.Remove(s);
+        s.GetComponent<Renderer>().material = unselectedMat;
+    }
+
+    public void DeselectAll()
+    {
+        foreach (Selectable s in selected)
+        {
+            s.GetComponent<Renderer>().material = unselectedMat;
+        }
+        selected.Clear();
+    }
 }
