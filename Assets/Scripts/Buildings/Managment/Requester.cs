@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Author: Roger Clanton
+ * 
+ * A class used to pass requests from a variety of building types to the player
+ */
+
 public class Requester : MonoBehaviour
 {
 

@@ -117,8 +117,8 @@ MonoBehaviour:
   heatMax: 70
   massCost: 500
   energyCost: 500
-  massCostPerSecond: 50
-  energyCostPerSecond: 50
+  massCostPerTick: 50
+  energyCostPerTick: 50
   massProd: 1
   energyProd: 1
   projectileDmg: 1

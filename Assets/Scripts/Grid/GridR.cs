@@ -4,6 +4,16 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/*
+ * Author: Roger Clanton
+ * 
+ * Creates a grid that keeps track of where buildings can be placed
+ * 
+ * TODO:
+ * Add new building and placement types as we create them
+ * Implement the ability for terrain to be damaged?
+ */
+
 public class GridR : MonoBehaviour
 {
 

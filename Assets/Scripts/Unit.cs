@@ -97,4 +97,13 @@ public class Unit : MonoBehaviour
         return energyCostPerTick;
     }
 
+    public int getMCTot()
+    {
+        return massCost;
+    }
+
+    public int getECTot()
+    {
+        return energyCost;
+    }
 }

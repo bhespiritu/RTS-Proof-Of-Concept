@@ -5,6 +5,15 @@ using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/*
+ * Author: Roger Clanton
+ * 
+ * Places buildings through the UI
+ * 
+ * TODO:
+ * Add new building and placement types as we create them
+ * Integrate with the UI
+ */
 public class BuildingPlacer : MonoBehaviour
 {
 

@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
 
+/*
+* Author: Roger Clanton:
+* 
+* A basic factory
+* 
+* TODO:
+* Add upgradability
+* integrate with UI
+* test if order queueing works
+* Remove Per second and make Per tick
+*/
+
 public class Factory : MonoBehaviour
 {
     private int bld = 5;
     private int cost;
     private int costPS;
-    private int energyCostPS;
+    private int energyCostPT;
     private int energyCostTotal;
-    private int unitTotalCost = 0;
-    private int unitCostPerFrame = 0;
+
 
     public Player player;
 
-
-    public GameObject unit1;
     public Unit unit;
     private Unit unitConstructing;
 
@@ -69,26 +78,24 @@ public class Factory : MonoBehaviour
         {
             if (producing)
             {
-                Debug.Log("Factory requests energy for unit: " + energyCostPS);
+                Debug.Log("Factory requests energy for unit: " + energyCostPT);
                 //Request Energy
-                player.energyRequest(request, energyCostPS);
+                player.energyRequest(request, energyCostPT);
             }
             else if (!constructed)
             {
-                Debug.Log("Factory requests energy for self: " + energyCostPS);
-                player.energyRequest(request, energyCostPS);
+                Debug.Log("Factory requests energy for self: " + energyCostPT);
+                player.energyRequest(request, energyCostPT);
             }
             
         }
     }
 
-    //Should return a cost to build this unit.
     public void place(Player p)
     {
         isPlaced = true;
         player = p;
         buildSelf();
-        
     }
 
     /// <summary>
@@ -108,6 +115,7 @@ public class Factory : MonoBehaviour
     public void removeOrder(Unit u)
     {
         orders.Remove(u);
+        
     }
 
     public SortedSet<int> getValidFoundation()
@@ -130,7 +138,7 @@ public class Factory : MonoBehaviour
     }
     public int getEnergyCostPS()
     {
-        return energyCostPS;
+        return energyCostPT;
     }
 
 
@@ -143,7 +151,7 @@ public class Factory : MonoBehaviour
     public void buildSelf()
     {
         energyCostTotal = 10000;
-        energyCostPS = 50;
+        energyCostPT = 50;
         progress = 0;
         orders = new List<Unit>();
         savedOrders = new List<Unit>();
@@ -151,16 +159,13 @@ public class Factory : MonoBehaviour
 
     public void build()
     {
+        Debug.Log("Make a unit");
         unitConstructing = orders[0];
         orders.RemoveAt(0);
         producing = true;
-        //Get the unit cost
 
-        //Replace with actual stuff
-        // energyCostTotal = unitConstructing.getEnergyCost();
-        // energyCostPS = unitConstructing.getEnergyCostPS();
-        energyCostTotal = 500;
-        energyCostPS = 1;
+        energyCostTotal = unitConstructing.getECTot();
+        energyCostPT = unitConstructing.getMCPT();
 
         //Set the build percentage to 0
         progress = 0;
@@ -172,14 +177,14 @@ public class Factory : MonoBehaviour
     /// </summary>
     public void work(float e)
     {
-        if (e * energyCostPS + progress >= energyCostTotal)
+        if (e * energyCostPT + progress >= energyCostTotal)
         {
-            player.recieveEnergy((int)e * energyCostPS + progress - energyCostTotal);
+            player.recieveEnergy((int)e * energyCostPT + progress - energyCostTotal);
             finish();
         }
         else
         {
-            progress += (int)(e * energyCostPS);
+            progress += (int)(e * energyCostPT);
         }
     }
 
@@ -187,12 +192,11 @@ public class Factory : MonoBehaviour
     {
         if (constructed)
         {
+            GameObject builtUnit = Instantiate(unit.gameObject, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
+            builtUnit.AddComponent<Unit>();
             //If there are no more orders in the queue
             if (orders.Count == 0)
             {
-                
-                GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
-                unit.AddComponent<Unit>();
                 if (repeat)
                 {
                     orders = deepCopy(savedOrders);
@@ -213,11 +217,12 @@ public class Factory : MonoBehaviour
         {
             constructed = true; 
             changeMesh(finishedConstructing);
-            //Test line to automatically build a unit
-           Order(unit1.GetComponent<Unit>());
+            //Test lines to automatically build a unit
+            Order(unit);
+            Order(unit);
+            removeOrder(unit);
             if (orders.Count != 0)
             {
-                Debug.Log("Make a unit");
                 build();
             }
             

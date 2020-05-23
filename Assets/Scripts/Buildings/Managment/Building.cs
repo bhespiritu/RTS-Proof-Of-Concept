@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+ * Author: Roger Clanton
+ * 
+ * Controls the list of building that are placeable, used by BuildingPlacer.cs
+ * Has to be updated everytime a new building type is added.
+ * 
+ * TODO:
+ * Integrate with the UI
+ */
 public class Building : MonoBehaviour
 {
     public GameObject buildingPrefab;
@@ -9,8 +19,6 @@ public class Building : MonoBehaviour
     public GameObject buildingPrefab2;
     public GameObject buildingPrefab3;
     public GameObject buildingPrefab4;
-
-    
 
     public Player player;
 

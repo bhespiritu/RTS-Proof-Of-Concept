@@ -366,9 +366,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalMass: 0
-  totalEnergy: 500000
+  totalEnergy: 43000
   totalUnits: 0
-  maxEnergy: 5000000
+  maxEnergy: 43000
   maxMass: 0
   score: 0
 --- !u!4 &1331252571

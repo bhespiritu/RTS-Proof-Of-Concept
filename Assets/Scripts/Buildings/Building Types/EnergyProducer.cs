@@ -3,6 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+* Author: Roger Clanton
+* 
+* A building that produces energy
+* 
+* TODO
+* Update to factory standards:
+* Make it use RoundTimeManager
+* Integrate with Player.cs
+* Give it cost attributes and health
+*/
+
 public class EnergyProducer : MonoBehaviour
 {
     private int eps = 100;

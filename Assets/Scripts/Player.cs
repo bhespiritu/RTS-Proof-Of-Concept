@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
+/* Author: Max Wizneski and Roger Clanton
+ * 
+ * Manages player resources
+ * 
+ * TODO:
+ */
+
 public class Player : MonoBehaviour
 {
     public int totalMass;
