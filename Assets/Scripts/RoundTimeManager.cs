@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldManager : MonoBehaviour
+public class RoundTimeManager : MonoBehaviour
 {
 
-    public static WorldManager INSTANCE;
+    public static RoundTimeManager INSTANCE;
 
     List<Player> players = new List<Player>();
 
@@ -20,7 +20,7 @@ public class WorldManager : MonoBehaviour
 
     public bool isPaused = false;
 
-    public WorldManager()
+    public RoundTimeManager()
     {
         
     }
@@ -35,7 +35,7 @@ public class WorldManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            Debug.LogError("There already exists a WorldManager in this world!");
+            Debug.LogError("There already exists a RoundTimeManager in this world!");
         }
     }
 

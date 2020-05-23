@@ -16,7 +16,9 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     public Material selectedMat;
     public Material unselectedMat;
 
-    public LayerMask selectionMask; 
+    public LayerMask selectionMask;
+
+    public GameObject selectionPrefab;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -98,20 +100,26 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     {
         selected.Add(s);
         s.GetComponent<Renderer>().material = selectedMat;
+        GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
+        selectionCircle.transform.localPosition = Vector3.up*-0.5f;
+        s.selectionObject = selectionCircle;
     }
 
 
-    public void Deselect(Selectable s)
+    public void Deselect(Selectable s, bool removeItem = true)
     {
-        selected.Remove(s);
+        if(removeItem)
+            selected.Remove(s);
         s.GetComponent<Renderer>().material = unselectedMat;
+        Destroy(s.selectionObject.gameObject);
+
     }
 
     public void DeselectAll()
     {
         foreach (Selectable s in selected)
         {
-            s.GetComponent<Renderer>().material = unselectedMat;
+            Deselect(s, false);
         }
         selected.Clear();
     }

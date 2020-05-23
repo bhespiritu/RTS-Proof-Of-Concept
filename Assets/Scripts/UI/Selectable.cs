@@ -6,6 +6,8 @@ public class Selectable : MonoBehaviour
 {
     public static List<Selectable> allSelectable = new List<Selectable>();
 
+    public GameObject selectionObject;
+
     // Start is called before the first frame update
     void Awake()
     {
