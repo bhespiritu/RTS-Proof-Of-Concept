@@ -105,17 +105,32 @@ public class Player : MonoBehaviour
     //e is a percent 0-1
     private void distributeEnergy(float e)
     {
-        List<Requester> tempReq = requests;
+        List<Requester> tempReq = buffer(requests);
         Debug.Log("length of tempReq is: " + tempReq.Count);
         if (tempReq.Count != 0)
         {
             foreach (Requester r in tempReq)
             {
                 r.giveEnergy(e);
-                requests.Remove(r);
                 Debug.Log("Length of requests after removal is: " + requests.Count);
-
             }
         }
     }
+
+
+    private List<Requester> buffer(List<Requester> r)
+    {
+        int c = r.Count;
+        List<Requester> newR = new List<Requester>();
+        if (c != 0)
+        {
+            for (int i = 0; i < c; i++)
+            {
+                newR.Add(r[i]);
+            }
+            r.RemoveRange(0, c);
+        }
+        return newR;
+    }
+
 }

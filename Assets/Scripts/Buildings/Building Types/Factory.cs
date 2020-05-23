@@ -13,10 +13,19 @@ public class Factory : MonoBehaviour
     private int unitTotalCost = 0;
     private int unitCostPerFrame = 0;
 
-    public GameObject unit1;
     public Player player;
-    public Unit unit;
 
+
+    public GameObject unit1;
+    public Unit unit;
+    private Unit unitConstructing;
+
+    //What will currently be built
+    private List<Unit> orders;
+    //Used so a factory will repeatedly build a group of units
+    private List<Unit> savedOrders;
+    //Used to toggle whether a set of orders should be repeated
+    private bool repeat = false;
 
     private MeshRenderer mesh;
     private MeshRenderer childMesh;
@@ -49,7 +58,7 @@ public class Factory : MonoBehaviour
         notConstructed = buildPlacer.notConstructed;
         finishedConstructing = buildPlacer.finishedConstructing;
         changeMesh(notConstructed);
-        buildSelf();
+        
     }
 
     // Update is called once per frame
@@ -57,17 +66,18 @@ public class Factory : MonoBehaviour
     {
         if (isPlaced)
         {
-            if (!constructed)
-            {
-                Debug.Log("Factory requests energy for self: " + energyCostPS);
-                player.energyRequest(request, energyCostPS);
-            }
             if (producing)
             {
                 Debug.Log("Factory requests energy for unit: " + energyCostPS);
                 //Request Energy
                 player.energyRequest(request, energyCostPS);
             }
+            else if (!constructed)
+            {
+                Debug.Log("Factory requests energy for self: " + energyCostPS);
+                player.energyRequest(request, energyCostPS);
+            }
+            
         }
     }
 
@@ -76,7 +86,27 @@ public class Factory : MonoBehaviour
     {
         isPlaced = true;
         player = p;
-        // use for if we need to do anything when pylons are placed.
+        buildSelf();
+        
+    }
+
+    /// <summary>
+    /// Make the current build queue be repeated by the factory
+    /// </summary>
+    public void repeatOrder()
+    {
+        repeat = true;
+        savedOrders = deepCopy(orders);
+    }
+
+    public void Order(Unit u)
+    {
+        orders.Add(u);
+    }
+
+    public void removeOrder(Unit u)
+    {
+        orders.Remove(u);
     }
 
     public SortedSet<int> getValidFoundation()
@@ -108,13 +138,25 @@ public class Factory : MonoBehaviour
         energyCostTotal = 10000;
         energyCostPS = 50;
         progress = 0;
+        orders = new List<Unit>();
+        savedOrders = new List<Unit>();
     }
+
+    public void toggleProduction()
+    {
+        producing = !producing;
+    }
+
     public void build()
     {
+        unitConstructing = orders[0];
+        orders.RemoveAt(0);
         producing = true;
         //Get the unit cost
 
         //Replace with actual stuff
+        // energyCostTotal = unitConstructing.getEnergyCost();
+        // energyCostPS = unitConstructing.getEnergyCostPS();
         energyCostTotal = 500;
         energyCostPS = 1;
 
@@ -138,19 +180,45 @@ public class Factory : MonoBehaviour
             progress += (int)(e * energyCostPS);
         }
     }
+
     private void finish()
     {
         if (constructed)
         {
-            producing = false;
-            GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
-            unit.AddComponent<Unit>();
+            //If there are no more orders in the queue
+            if (orders.Count == 0)
+            {
+                
+                GameObject unit = Instantiate(unit1, transform.position + new Vector3(10, 10, 10), Quaternion.identity);
+                unit.AddComponent<Unit>();
+                if (repeat)
+                {
+                    orders = deepCopy(savedOrders);
+                    build();
+                }
+
+                else{ producing = false; }
+
+            }
+
+            else {
+                build();
+            }
+
         }
+
         else
         {
             constructed = true; 
             changeMesh(finishedConstructing);
-            build();
+            //Test line to automatically build a unit
+            Order(unit1.GetComponent<Unit>());
+            if (orders.Count != 0)
+            {
+                Debug.Log("Make a unit");
+                build();
+            }
+            
         }
         Debug.Log("Finish");
         
@@ -165,5 +233,20 @@ public class Factory : MonoBehaviour
             childMesh = child.GetComponent<MeshRenderer>();
             childMesh.material = m;
         }
+    }
+
+    private List<Unit> deepCopy(List<Unit> q)
+    {
+        List<Unit> retQ = new List<Unit>();
+        if (q.Count != 0)
+        {
+            Unit[] units = q.ToArray();
+            foreach(Unit u in units)
+            {
+                retQ.Add(u);
+            }
+            return retQ;
+        }
+        return retQ;
     }
 }
