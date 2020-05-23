@@ -26,8 +26,8 @@ public class Unit : MonoBehaviour
     public int heatMax;
     public int massCost;
     public int energyCost;
-    public int massCostPerSecond;
-    public int energyCostPerSecond;
+    public int massCostPerTick;
+    public int energyCostPerTick;
     public int massProd;
     public int energyProd;
 
@@ -82,9 +82,19 @@ public class Unit : MonoBehaviour
     }
 
     //Destroys the unit. Notifies unit manager, notifies killer for veterancy purposes
-    void unitDeath(){
+    void unitDeath()
+    {
         Destroy(gameObject);
     }
 
+    public int getMCPT()
+    {
+        return massCostPerTick;
+    }
+
+    public int getECPT()
+    {
+        return energyCostPerTick;
+    }
 
 }
