@@ -11,7 +11,6 @@ public class Player : MonoBehaviour
     public int maxEnergy = 200000000;
     public int maxMass;
     public ulong score;
-    private int energyRequested = 0;
 
     private List<Requester> requests;
     
@@ -20,22 +19,15 @@ public class Player : MonoBehaviour
     void Awake()
     {
         requests = new List<Requester>();
+        RoundTimeManager.OnRoundTick += onTick;
     }
 
     // Update is called once per frame
-    void Update()
+    void onTick()
     {
-        Debug.Log("energy requested is: " + energyRequested);
-        Debug.Log("Length of requests is: " + requests.Count);
-        if (energyRequested != 0)
+        if (requests.Count != 0)
         {
             spendEnergy();
-        }
-        //Conditional to try to slap a fix on an error
-        //Basically ensures that if energyRequested is 0 there shouldn't be any requests. This should just be true, but it isn't.
-        if(energyRequested == 0)
-        {
-            requests.Clear();
         }
     }
 
@@ -46,22 +38,31 @@ public class Player : MonoBehaviour
 
     public void spendEnergy()
     {
+        List<Requester> r = buffer(requests);
         int curE = totalEnergy;
-        int curReq = energyRequested;
+        int curReq = 0;
+        int c = r.Count;
+        if (c <= 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < c; i++)
+        {
+            curReq += r[i].getEnergy();
+        }
+
         if(curReq <= curE)
         {
             totalEnergy -= curReq;
-            energyRequested -= curReq;
-            distributeEnergy(1);
+            distributeEnergy(1,r);
         }
         else
         {
-            distributeEnergy(curE / curReq);
+            distributeEnergy(curE / curReq,r);
             totalEnergy -= curE;
-            energyRequested -= curReq;
         }
-
-
+        Debug.Log("curReq is: " + curReq);
     }
 
     public int getMass()
@@ -96,23 +97,21 @@ public class Player : MonoBehaviour
     {
         if (!requests.Contains(r))
         {
+            r.setEnergy(e);
             requests.Add(r);
             Debug.Log("Requesting more energy: " + e);
-            energyRequested += e;
         }
     }
 
     //e is a percent 0-1
-    private void distributeEnergy(float e)
+    private void distributeEnergy(float e, List<Requester> r)
     {
-        List<Requester> tempReq = buffer(requests);
-        Debug.Log("length of tempReq is: " + tempReq.Count);
-        if (tempReq.Count != 0)
+        Debug.Log("e is: " + e);
+        if (r.Count != 0)
         {
-            foreach (Requester r in tempReq)
+            foreach (Requester req in r)
             {
-                r.giveEnergy(e);
-                Debug.Log("Length of requests after removal is: " + requests.Count);
+                req.giveEnergy(e);
             }
         }
     }
