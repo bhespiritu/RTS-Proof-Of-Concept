@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class Requester : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    private int energy;
+    
+    public void setEnergy(int e)
     {
-       
+        energy = e;
     }
 
-    // Update is called once per frame
-    void Update()
+    public int getEnergy()
     {
-
+        return energy;
     }
 
     // e is a percentage of energy requested

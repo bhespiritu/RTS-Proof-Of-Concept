@@ -26,6 +26,8 @@ public class Unit : MonoBehaviour
     public int heatMax;
     public int massCost;
     public int energyCost;
+    public int massCostPerSecond;
+    public int energyCostPerSecond;
     public int massProd;
     public int energyProd;
 
