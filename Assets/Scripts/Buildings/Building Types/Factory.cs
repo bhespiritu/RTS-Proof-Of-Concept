@@ -58,11 +58,12 @@ public class Factory : MonoBehaviour
         notConstructed = buildPlacer.notConstructed;
         finishedConstructing = buildPlacer.finishedConstructing;
         changeMesh(notConstructed);
+        RoundTimeManager.OnRoundTick += onTick;
         
     }
 
     // Update is called once per frame
-    void Update()
+    void onTick()
     {
         if (isPlaced)
         {
@@ -131,7 +132,13 @@ public class Factory : MonoBehaviour
     {
         return energyCostPS;
     }
- 
+
+
+    public void toggleProduction()
+    {
+        producing = !producing;
+    }
+
     //Used when the factory is being constructed
     public void buildSelf()
     {
@@ -140,11 +147,6 @@ public class Factory : MonoBehaviour
         progress = 0;
         orders = new List<Unit>();
         savedOrders = new List<Unit>();
-    }
-
-    public void toggleProduction()
-    {
-        producing = !producing;
     }
 
     public void build()
@@ -212,7 +214,7 @@ public class Factory : MonoBehaviour
             constructed = true; 
             changeMesh(finishedConstructing);
             //Test line to automatically build a unit
-            Order(unit1.GetComponent<Unit>());
+           Order(unit1.GetComponent<Unit>());
             if (orders.Count != 0)
             {
                 Debug.Log("Make a unit");
