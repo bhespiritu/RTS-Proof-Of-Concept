@@ -12,30 +12,24 @@ public class UnitManager
     private List<Unit> unitList;
     private List<Vector3> unitPoints;
 
+    private static uint globalID = 0;
+
 
     private UnitManager()
     {
     }
 
-    public static int UNIT_CAP = 10000;//change it to whatever we feel like.
+    public static int UNIT_CAP = 500;//change it to whatever we feel like.
 
 
     
 
 
-    public void AddUnit(Vector2 position)
+    public void SpawnUnit(Vector2 position)
     {
-
+        Unit u = new Unit();
+        //TODO add in spawn placement
+        u.uID = globalID++;
     }
 
-
-
-    public List<int> searchRadius(Vector2 position, float radius)
-    {
-        var resultIndices = new List<int>();
-
-        
-
-        return resultIndices;
-    }
 }

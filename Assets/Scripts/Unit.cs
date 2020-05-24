@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    public uint uID;
+
     [Header("General Attributes")]
     public string name;
     public int health;
@@ -40,6 +42,10 @@ public class Unit : MonoBehaviour
     public float reloadTime;
     public float weaponRange;
     public int selfHeat;
+
+    //Author Noah Espiritu
+    [HideInInspector]
+    public UnitGroup associatedPathfindingGroup;
 
     // Start is called before the first frame update
     void Start()

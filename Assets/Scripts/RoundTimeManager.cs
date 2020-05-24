@@ -33,18 +33,20 @@ public class RoundTimeManager : MonoBehaviour
     private uint _tickCount;
     private uint _inputTickCount;
 
+    public bool isPaused = false;
+
     public delegate void StartEvent();
     public static event StartEvent OnRoundStart;
 
     public delegate void TickEvent();
     public static event TickEvent OnRoundTick;
 
-    public bool isPaused = false;
+    private ActionSystem actionSystem;
     #endregion
 
     public RoundTimeManager()
     {
-        
+        actionSystem = new ActionSystem();
     }
 
     public void Awake()
