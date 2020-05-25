@@ -22,7 +22,7 @@ using UnityEditor;//TODO remove this
 /*
  * I'll explain the algorithm in detail in the Github wiki
  */
-public class FlowField : MonoBehaviour
+public class FlowFieldHandler : MonoBehaviour
 {
     int mapSize = 16;
 
@@ -240,12 +240,12 @@ public class FlowField : MonoBehaviour
 
                 if(horiz)//TODO simplify these lines of code
                 {
-                    sideA = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()), (y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowField.grid.getSpacing()) == -1;
-                    sideB = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()), (y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowField.grid.getSpacing()) == -1;
+                    sideA = FlowFieldHandler.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()), (y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowFieldHandler.grid.getSpacing()) == -1;
+                    sideB = FlowFieldHandler.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()), (y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1;
                 } else
                 {
-                    sideA = FlowField.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowField.grid.getSpacing(), y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) == -1;
-                    sideB = FlowField.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowField.grid.getSpacing(), y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) == -1;
+                    sideA = FlowFieldHandler.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowFieldHandler.grid.getSpacing(), y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) == -1;
+                    sideB = FlowFieldHandler.grid.getBuilding(((x-1)/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowFieldHandler.grid.getSpacing(), y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) == -1;
                 }
 
 
@@ -264,8 +264,8 @@ public class FlowField : MonoBehaviour
                 {
                     if (horiz)
                     {
-                        sideA = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + i* FlowField.grid.getSpacing(), (y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowField.grid.getSpacing()) == -1;
-                        sideB = FlowField.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + i* FlowField.grid.getSpacing(), (y * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowField.grid.getSpacing()) == -1;
+                        sideA = FlowFieldHandler.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + i* FlowFieldHandler.grid.getSpacing(), (y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowFieldHandler.grid.getSpacing()) == -1;
+                        sideB = FlowFieldHandler.grid.getBuilding((x/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + i* FlowFieldHandler.grid.getSpacing(), (y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1;
 
                         //Debug.Log("Horiz: " + new Vector2((x / 2 * FlowGrid.gridResolution * 10) + i * 10, (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10));
                         //Debug.Log(FlowField.grid.getBuilding((x / 2 * FlowGrid.gridResolution * 10) + i * 10, (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10));
@@ -273,8 +273,8 @@ public class FlowField : MonoBehaviour
                     }
                     else
                     {
-                        sideA = FlowField.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowField.grid.getSpacing(), y * FlowGrid.gridResolution * FlowField.grid.getSpacing() + i* FlowField.grid.getSpacing()) == -1;
-                        sideB = FlowField.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * FlowField.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowField.grid.getSpacing(), y * FlowGrid.gridResolution * FlowField.grid.getSpacing() + i* FlowField.grid.getSpacing()) == -1;
+                        sideA = FlowFieldHandler.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution - 1) * FlowFieldHandler.grid.getSpacing(), y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing() + i* FlowFieldHandler.grid.getSpacing()) == -1;
+                        sideB = FlowFieldHandler.grid.getBuilding(((x - 1)/2 * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing()) + (FlowGrid.gridResolution) * FlowFieldHandler.grid.getSpacing(), y * FlowGrid.gridResolution * FlowFieldHandler.grid.getSpacing() + i* FlowFieldHandler.grid.getSpacing()) == -1;
 
                         //Debug.Log("Vert: " + new Vector2((x / 2 * FlowGrid.gridResolution * 10), (y * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10 + i * 10));
                         //Debug.Log(FlowField.grid.getBuilding((x / 2 * FlowGrid.gridResolution * 10) + (FlowGrid.gridResolution - 1) * 10, (y * FlowGrid.gridResolution * 10 + i * 10)));
@@ -383,11 +383,11 @@ public class FlowField : MonoBehaviour
             Vector3 size = Vector3.one * 5;
             if (horiz)
             {
-                size += Vector3.right * (node.size) * FlowField.grid.getSpacing();
+                size += Vector3.right * (node.size) * FlowFieldHandler.grid.getSpacing();
             }
             else
             {
-                size += Vector3.forward * (node.size) * FlowField.grid.getSpacing();
+                size += Vector3.forward * (node.size) * FlowFieldHandler.grid.getSpacing();
             }
             Gizmos.DrawSphere(position, 6);
             Gizmos.DrawCube(position, size);
@@ -404,7 +404,7 @@ public class FlowField : MonoBehaviour
         {
             for (int y = 0; y < 16; y++)
             {
-                Handles.Label(new Vector3(x, 0, y) * 10 + 10 * FlowGrid.gridResolution * new Vector3(debugX, 0, debugY) + Vector3.up * 45, FlowField.grid.getBuilding((x + debugX * 16) * 10, (y + debugY * 16) * 10) + "");
+                Handles.Label(new Vector3(x, 0, y) * 10 + 10 * FlowGrid.gridResolution * new Vector3(debugX, 0, debugY) + Vector3.up * 45, FlowFieldHandler.grid.getBuilding((x + debugX * 16) * 10, (y + debugY * 16) * 10) + "");
             }
         }
 
@@ -415,22 +415,22 @@ public class FlowField : MonoBehaviour
 
         if (subX > 0)
         {
-            if (FlowField.grid.getBuilding(((subX - 1) + debugX * 16) * 10, (subY + debugY * 16) * 10) == -1)
+            if (FlowFieldHandler.grid.getBuilding(((subX - 1) + debugX * 16) * 10, (subY + debugY * 16) * 10) == -1)
                 Gizmos.DrawCube(new Vector3(((subX - 1) + debugX * 16) * 10, 50, (subY + debugY * 16) * 10), Vector3.one * 10);
         }
         if (subY > 0)
         {
-            if (FlowField.grid.getBuilding((subX + debugX * 16) * 10, ((subY - 1) + debugY * 16) * 10) == -1)
+            if (FlowFieldHandler.grid.getBuilding((subX + debugX * 16) * 10, ((subY - 1) + debugY * 16) * 10) == -1)
                 Gizmos.DrawCube(new Vector3(((subX) + debugX * 16) * 10, 50, (subY - 1 + debugY * 16) * 10), Vector3.one * 10);
         }
         if (subX < 16 - 1)
         {
-            if (FlowField.grid.getBuilding(((subX + 1) + debugX * 16) * 10, (subY + debugY * 16) * 10) == -1)
+            if (FlowFieldHandler.grid.getBuilding(((subX + 1) + debugX * 16) * 10, (subY + debugY * 16) * 10) == -1)
                 Gizmos.DrawCube(new Vector3(((subX + 1) + debugX * 16) * 10, 50, (subY + debugY * 16) * 10), Vector3.one * 10);
         }
         if (subY < 16 - 1)
         {
-            if (FlowField.grid.getBuilding((subX + debugX * 16) * 10, ((subY + 1) + debugY * 16) * 10) == -1)
+            if (FlowFieldHandler.grid.getBuilding((subX + debugX * 16) * 10, ((subY + 1) + debugY * 16) * 10) == -1)
                 Gizmos.DrawCube(new Vector3(((subX) + debugX * 16) * 10, 50, (subY + 1 + debugY * 16) * 10), Vector3.one * 10);
         }
 
@@ -546,12 +546,12 @@ public class PortalGraph : NodeData
             Vector2 position = new Vector3(16 * (portalX / 2 + (horiz ? 0 : 1) - (side && !horiz ? 1 : 0)), 16 * (portalY + (horiz ? 1 : 0) - (side && horiz ? 1 : 0))) * 10;//I'm too lazy to simplify this
             if (horiz)
             {
-                position += Vector2.right * FlowField.grid.getSpacing() * (startIndex + size / 2);
+                position += Vector2.right * FlowFieldHandler.grid.getSpacing() * (startIndex + size / 2);
                 position += Vector2.up * (side ? 1 : -1) * 5;
             }
             else
             {
-                position += Vector2.up * FlowField.grid.getSpacing() * (startIndex + size / 2);
+                position += Vector2.up * FlowFieldHandler.grid.getSpacing() * (startIndex + size / 2);
                 position += Vector2.right * (side ? 1 : -1) * 5;
             }
             return position;
@@ -849,7 +849,7 @@ public class FlowGrid
     public int getCost(int x, int y)
     {
         //return 1;
-        int bld = FlowField.grid.getBuilding((x + chunkX*gridResolution)* FlowField.grid.getSpacing(), (y + chunkY * gridResolution) * FlowField.grid.getSpacing());
+        int bld = FlowFieldHandler.grid.getBuilding((x + chunkX*gridResolution)* FlowFieldHandler.grid.getSpacing(), (y + chunkY * gridResolution) * FlowFieldHandler.grid.getSpacing());
         if (bld != -1) return 256;
         return 1;
     }
@@ -890,22 +890,22 @@ public class GridDataChunk : NodeData
         int y = fgNode.y;
         if (x > 0)
         {
-            if(FlowField.grid.getBuilding(((x - 1) + chunkX * gridResolution) * FlowField.grid.getSpacing(), (y + chunkY * gridResolution) * FlowField.grid.getSpacing()) == -1)
+            if(FlowFieldHandler.grid.getBuilding(((x - 1) + chunkX * gridResolution) * FlowFieldHandler.grid.getSpacing(), (y + chunkY * gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1)
                 neighbors.Add(AStarGrid[x - 1, y]);
         }
         if (y > 0)
         {
-            if (FlowField.grid.getBuilding((x + chunkX * gridResolution) * FlowField.grid.getSpacing(), ((y - 1) + chunkY * gridResolution) * FlowField.grid.getSpacing()) == -1)
+            if (FlowFieldHandler.grid.getBuilding((x + chunkX * gridResolution) * FlowFieldHandler.grid.getSpacing(), ((y - 1) + chunkY * gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1)
                 neighbors.Add(AStarGrid[x, y - 1]);
         }
         if (x < gridResolution - 1)
         {
-            if (FlowField.grid.getBuilding(((x + 1) + chunkX * gridResolution) * FlowField.grid.getSpacing(), (y + chunkY * gridResolution) * FlowField.grid.getSpacing()) == -1)
+            if (FlowFieldHandler.grid.getBuilding(((x + 1) + chunkX * gridResolution) * FlowFieldHandler.grid.getSpacing(), (y + chunkY * gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1)
                 neighbors.Add(AStarGrid[x + 1, y]);
         }
         if (y < gridResolution - 1)
         {
-            if (FlowField.grid.getBuilding((x + chunkX * gridResolution) * FlowField.grid.getSpacing(), ((y + 1) + chunkY * gridResolution) * FlowField.grid.getSpacing()) == -1)
+            if (FlowFieldHandler.grid.getBuilding((x + chunkX * gridResolution) * FlowFieldHandler.grid.getSpacing(), ((y + 1) + chunkY * gridResolution) * FlowFieldHandler.grid.getSpacing()) == -1)
                 neighbors.Add(AStarGrid[x, y + 1]);
         }
     }
