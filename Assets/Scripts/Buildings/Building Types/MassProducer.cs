@@ -6,7 +6,7 @@ using UnityEngine;
 public class Producer : MonoBehaviour
 {
 
-    int bldInt = 3;
+    //int bldInt = 3;
     //List of all building is can be placed on
     private SortedSet<int> placeable = new SortedSet<int>{ -3 };
     BuildingPlacer cubePlacer;

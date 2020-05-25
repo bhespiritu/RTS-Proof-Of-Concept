@@ -18,7 +18,7 @@ using UnityEngine;
 public class Factory : MonoBehaviour
 {
     private int bld = 5;
-    private int cost;
+    private int cost ;
     private int costPS;
     private int energyCostPT;
     private int energyCostTotal;
@@ -219,8 +219,6 @@ public class Factory : MonoBehaviour
             changeMesh(finishedConstructing);
             //Test lines to automatically build a unit
             Order(unit);
-            Order(unit);
-            removeOrder(unit);
             if (orders.Count != 0)
             {
                 build();

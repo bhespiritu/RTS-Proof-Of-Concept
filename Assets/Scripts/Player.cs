@@ -38,6 +38,11 @@ public class Player : MonoBehaviour
         }
     }
 
+    public int getMaxEnergy()
+    {
+        return maxEnergy;
+    }
+
     public void spendMass(int amount)
     {
         totalMass -= amount;
