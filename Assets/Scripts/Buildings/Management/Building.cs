@@ -81,7 +81,7 @@ public class Building : MonoBehaviour
                 placement.GetComponent<Pylon>().place();
                 break;
             case 3:
-                placement.GetComponent<Producer>().place();
+                placement.GetComponent<MassProducer>().place();
                 break;
             case 4:
                 placement.GetComponent<Factory>().place(player);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
 
-public class Producer : MonoBehaviour
+public class MassProducer : MonoBehaviour
 {
 
     //int bldInt = 3;

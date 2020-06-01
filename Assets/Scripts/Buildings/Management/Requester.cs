@@ -34,7 +34,7 @@ public class Requester : MonoBehaviour
         {
             return;
         }
-        if (gameObject.TryGetComponent<Producer>(out Producer producer))
+        if (gameObject.TryGetComponent<MassProducer>(out MassProducer producer))
         {
             return;
         }

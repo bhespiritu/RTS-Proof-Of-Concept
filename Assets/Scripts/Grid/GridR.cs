@@ -200,7 +200,7 @@ public class GridR : MonoBehaviour
         {
             return 2;
         }
-        if (hit.collider.gameObject.TryGetComponent<Producer>(out Producer producer))
+        if (hit.collider.gameObject.TryGetComponent<MassProducer>(out MassProducer producer))
         {
             return 3;
         }

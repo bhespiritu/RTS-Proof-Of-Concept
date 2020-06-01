@@ -17,7 +17,7 @@ using UnityEngine;
 
 public class Factory : MonoBehaviour
 {
-    private int bld = 5;
+    //private int bld = 5;
     private int cost ;
     private int costPS;
     private int energyCostPT;

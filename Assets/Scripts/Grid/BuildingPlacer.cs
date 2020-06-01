@@ -206,7 +206,7 @@ public class BuildingPlacer : MonoBehaviour
         {
             return pylon.getValidFoundation();
         }
-        if (cursor.TryGetComponent<Producer>(out Producer producer))
+        if (cursor.TryGetComponent<MassProducer>(out MassProducer producer))
         {
             return producer.getValidFoundation();
         }
