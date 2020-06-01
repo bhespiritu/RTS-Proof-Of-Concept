@@ -121,6 +121,8 @@ public class RoundTimeManager : MonoBehaviour
         if(canMoveOn)
         {
             _inputTickCount++;
+
+            actionSystem.performAction();
         }
 
         return canMoveOn;

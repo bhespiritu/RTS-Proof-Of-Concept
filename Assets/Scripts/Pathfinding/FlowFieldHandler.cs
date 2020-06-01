@@ -10,6 +10,7 @@ using UnityEditor;//TODO remove this
  * TODO: refactor everything in this. There are multiple types of grids involved, so the variable names are a bit confusing.
  * 
  * Features to add:
+ * - Multiple Source Positions
  * - Detecting and pathfinding around walls
  * - Serialization and Deserialization
  * - Improve seams between flow grids

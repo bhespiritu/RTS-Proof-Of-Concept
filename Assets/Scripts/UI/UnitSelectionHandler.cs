@@ -100,9 +100,12 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
     {
         selected.Add(s);
         s.GetComponent<Renderer>().material = selectedMat;
-        GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
-        selectionCircle.transform.localPosition = Vector3.up*-0.5f;
-        s.selectionObject = selectionCircle;
+        if (!s.selectionObject)
+        {
+            GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
+            selectionCircle.transform.localPosition = Vector3.up * -0.5f;
+            s.selectionObject = selectionCircle;
+        }
     }
 
 

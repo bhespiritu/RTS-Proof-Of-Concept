@@ -12,7 +12,18 @@ public class ActionSystem
 
    public void performAction()
     {
-        IAction action = actionQueue.Dequeue();
+        IAction action = null;
+
+        if(actionQueue.Count > 0)
+        {
+            action = actionQueue.Dequeue();
+        }
+
+        if(action == null)
+        {
+            action = new NoOp();
+        }
+
         action.ProcessAction(this);
     }
 
@@ -26,6 +37,8 @@ public class ActionSystem
 
 public interface IAction
 {
+
+    
     void ProcessAction(ActionSystem ctx);
 }
 
@@ -69,5 +82,15 @@ public class Move : IAction
         group.UpdatePathfinding();
         
 
+    }
+}
+
+public class RequestUnit : IAction
+{
+    Building targetBuilding;
+
+    public void ProcessAction(ActionSystem ctx)
+    {
+        
     }
 }
