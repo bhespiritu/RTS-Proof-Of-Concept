@@ -36,13 +36,13 @@ public class BuildingPlacer : MonoBehaviour
 
     public LayerMask buildingsLayerMask;
 
-    private Building building;
+    private BuildingController building;
 
     
     private void Awake() {
 
         //Find the prefab from building
-        building = FindObjectOfType<Building>();
+        building = FindObjectOfType<BuildingController>();
         building.givePlayer(player);
         buildingPrefab = building.getBuildingPrefab();
         //Find the grid, stores information about whether a space is placeable

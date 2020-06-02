@@ -87,7 +87,7 @@ public class Move : IAction
 
 public class RequestUnit : IAction
 {
-    Building targetBuilding;
+    BuildingController targetBuilding;
 
     public void ProcessAction(ActionSystem ctx)
     {
