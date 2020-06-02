@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
+public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField]
     Image selectionImage;
@@ -22,7 +22,6 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        
         selectionImage.gameObject.SetActive(true);
         clickStart = eventData.position;
         selectRect = new Rect();
@@ -98,18 +97,22 @@ public class UnitSelectionHandler : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     public void Select(Selectable s)
     {
-        Deselect(s);
-        selected.Add(s);
-        s.GetComponent<Renderer>().material = selectedMat;
+        if (!selected.Contains(s))
+        {
+            selected.Add(s);
+            s.Select();
+            s.GetComponent<Renderer>().material = selectedMat;
 
-        GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
-        selectionCircle.transform.localPosition = Vector3.up * -0.5f;
-        s.selectionObject = selectionCircle;
+            GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
+            selectionCircle.transform.localPosition = Vector3.up * -0.5f;
+            s.selectionObject = selectionCircle;
+        }
     }
 
 
     public void Deselect(Selectable s, bool removeItem = true)
     {
+        s.Deselect();
         if(removeItem)
             selected.Remove(s);
         s.GetComponent<Renderer>().material = unselectedMat;

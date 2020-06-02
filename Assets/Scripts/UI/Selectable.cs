@@ -8,15 +8,25 @@ public class Selectable : MonoBehaviour
 
     public GameObject selectionObject;
 
+    public delegate void SelectEvent();
+    public static event SelectEvent OnSelect;
+
+    public delegate void DeselectEvent();
+    public static event DeselectEvent OnDeselect;
+
     // Start is called before the first frame update
     void Awake()
     {
         allSelectable.Add(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Select()
     {
-        
+        OnSelect?.Invoke();
+    }
+
+    public void Deselect()
+    {
+        OnDeselect?.Invoke();
     }
 }
