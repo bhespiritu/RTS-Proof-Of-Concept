@@ -11,6 +11,8 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     Vector2 clickStart;
     Rect selectRect;
 
+    public MouseMode mouseMode = MouseMode.Select;//TODO change behaviour based on mode.
+
     List<Selectable> selected = new List<Selectable>();
 
     public Material selectedMat;
@@ -128,4 +130,9 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         }
         selected.Clear();
     }
+}
+
+public enum MouseMode
+{
+    NoSelect, Select, Placement
 }
