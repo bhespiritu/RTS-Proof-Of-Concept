@@ -29,4 +29,11 @@ public class Selectable : MonoBehaviour
     {
         OnDeselect?.Invoke();
     }
+
+    public void OnDestroy()
+    {
+        OnSelect = null;
+        OnDeselect = null;
+        allSelectable.Remove(this);
+    }
 }
