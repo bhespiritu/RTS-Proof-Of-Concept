@@ -9,10 +9,10 @@ public class Selectable : MonoBehaviour
     public GameObject selectionObject;
 
     public delegate void SelectEvent();
-    public static event SelectEvent OnSelect;
+    public event SelectEvent OnSelect;
 
     public delegate void DeselectEvent();
-    public static event DeselectEvent OnDeselect;
+    public event DeselectEvent OnDeselect;
 
     // Start is called before the first frame update
     void Awake()
