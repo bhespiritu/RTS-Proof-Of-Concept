@@ -14,26 +14,36 @@ using UnityEngine;
  */
 public class BuildingController : MonoBehaviour
 {
-    public GameObject buildingPrefab;
-    public GameObject buildingPrefab1;
-    public GameObject buildingPrefab2;
-    public GameObject buildingPrefab3;
-    public GameObject buildingPrefab4;
-
-    public Player player;
-
-
-    public int bldInt = 1;
+    //Todo figure out what each buildings ID is
+    //Mass producer is 3
+    //Energy producer is 4
+    //Factory is 5
+    //Pylon is 6
+    public int bldInt;
+    private Player player;
     // Start is called before the first frame update
     private void Awake()
     {
-        buildingPrefab = buildingPrefab1;
-        bldInt = 1;
-    }
+        if (gameObject.TryGetComponent<MassProducer>(out MassProducer m))
+        {
+            bldInt = m.GetBldInt();
+        }
 
-    private void Update()
-    {
+        if (gameObject.TryGetComponent<EnergyProducer>(out EnergyProducer e))
+        {
+            bldInt = e.GetBldInt();
+        }
 
+
+        if (gameObject.TryGetComponent<Factory>(out Factory f))
+        {
+            bldInt = f.GetBldInt();
+        }
+
+        if (gameObject.TryGetComponent<Pylon>(out Pylon p))
+        {
+            bldInt = p.GetBldInt();
+        }        
     }
 
     public int getBldType()
@@ -43,49 +53,39 @@ public class BuildingController : MonoBehaviour
 
     public GameObject getBuildingPrefab()
     {
-        return buildingPrefab;
+        switch (bldInt)
+        {
+            case (3):
+                return gameObject.GetComponent<MassProducer>().getBuildingPrefab();
+            case (4):
+                return gameObject.GetComponent<EnergyProducer>().getBuildingPrefab();
+            case (5):
+                return gameObject.GetComponent<Factory>().getBuildingPrefab();
+            case (6):
+                return gameObject.GetComponent<Pylon>().getBuildingPrefab();
+        }
+        return null;
     }
 
-    public GameObject switchBuilding(int x)
-    {
-        switch (x)
-        {
-            case 1:  buildingPrefab = buildingPrefab1;
-                bldInt = 1;
-                break;
-            case 2:
-                bldInt = 2;
-                buildingPrefab = buildingPrefab2;
-                break;
-            case 3:
-                bldInt = 3;
-                buildingPrefab = buildingPrefab3;
-                break;
-            case 4:
-                bldInt = 4;
-                buildingPrefab = buildingPrefab4;
-                break;
-        }
-        return buildingPrefab;
-    }
 
     //Calls the placement function for each building type
     public void place(GameObject placement)
     {
         switch (bldInt)
         {
-            case 1:
-                placement.GetComponent<EnergyProducer>().place(player);
-                break;
-            case 2:
-                placement.GetComponent<Pylon>().place();
-                break;
             case 3:
                 placement.GetComponent<MassProducer>().place();
                 break;
             case 4:
+                placement.GetComponent<EnergyProducer>().place(player);
+                break;
+            case 5:
                 placement.GetComponent<Factory>().place(player);
                 break;
+            case 6:
+                placement.GetComponent<Pylon>().place();
+                break;
+            
         }
     }
 

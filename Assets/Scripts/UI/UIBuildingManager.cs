@@ -36,6 +36,7 @@ public class UIBuildingManager : MonoBehaviour
         deactivateElements();
         uiElements.Clear();
     }
+
     public void changeElements(List<GameObject> elements)
     {
         clearElementsList();

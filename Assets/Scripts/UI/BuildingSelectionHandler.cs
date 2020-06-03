@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class BuildingSelectionHandler : MonoBehaviour
 {
     GameObject gui;
+    public UIBuildingManager uiManager;
 
     private RaycastHit clickCast = new RaycastHit();
     public void OnPointerClick(PointerEventData eventData)
@@ -25,4 +26,8 @@ public class BuildingSelectionHandler : MonoBehaviour
         }
     }
 
+    public void OnSelect(Building bld)
+    {
+        uiManager.changeElements(bld.getElements());
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,7 +50,7 @@ public class EnergyProducer : MonoBehaviour
         }
     }
 
-    public int getBuildingType()
+    public int GetBldInt()
     {
         return bld;
     }
@@ -71,6 +72,11 @@ public class EnergyProducer : MonoBehaviour
         newBuff += checkBonus((int)this.transform.position.x + (int)grid.getSpacing(), (int)this.transform.position.z - (int)grid.getSpacing());
         newBuff += checkBonus((int)this.transform.position.x, (int)this.transform.position.z - (int)grid.getSpacing());
         return newBuff;
+    }
+
+    internal GameObject getBuildingPrefab()
+    {
+        throw new NotImplementedException();
     }
 
     private int checkBonus(int x, int y)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
@@ -17,7 +18,7 @@ using UnityEngine;
 
 public class Factory : MonoBehaviour
 {
-    //private int bld = 5;
+    private int bld = 5;
     private int cost ;
     private int costPS;
     private int energyCostPT;
@@ -71,6 +72,11 @@ public class Factory : MonoBehaviour
         
     }
 
+    internal GameObject getBuildingPrefab()
+    {
+        throw new NotImplementedException();
+    }
+
     // Update is called once per frame
     void onTick()
     {
@@ -89,6 +95,11 @@ public class Factory : MonoBehaviour
             }
             
         }
+    }
+
+    public int GetBldInt()
+    {
+        return bld;
     }
 
     public void place(Player p)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class Pylon : MonoBehaviour
     private int costPS;
     private int energyCostPS;
     private int energyCostTotal;
+    private int bldInt = 6;
 
     BuildingPlacer buildPlacer;
     GridR grid;
@@ -23,9 +25,9 @@ public class Pylon : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public int GetBldInt()
     {
-        
+        return bldInt;
     }
 
     //Should return a cost to build this unit.
@@ -59,5 +61,10 @@ public class Pylon : MonoBehaviour
     public int getEnergyCostPS()
     {
         return energyCostPS;
+    }
+
+    internal GameObject getBuildingPrefab()
+    {
+        throw new NotImplementedException();
     }
 }
