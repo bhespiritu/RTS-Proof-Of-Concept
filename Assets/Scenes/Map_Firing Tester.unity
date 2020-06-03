@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 219169456}
   - component: {fileID: 219169455}
   - component: {fileID: 219169454}
+  - component: {fileID: 219169458}
   m_Layer: 0
   m_Name: Bombing Target
   m_TagString: Untagged
@@ -322,12 +323,28 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 219169453}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 327.47, y: 50.64, z: 40}
+  m_LocalPosition: {x: 320, y: 50.64, z: 40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &219169458
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219169453}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &225630766
 GameObject:
   m_ObjectHideFlags: 0
@@ -481,7 +498,10 @@ GameObject:
   - component: {fileID: 320690137}
   - component: {fileID: 320690136}
   - component: {fileID: 320690135}
-  m_Layer: 0
+  - component: {fileID: 320690140}
+  - component: {fileID: 320690139}
+  - component: {fileID: 320690141}
+  m_Layer: 10
   m_Name: Bomber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -555,12 +575,57 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 320690134}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 200, y: 100.8, z: 40}
+  m_LocalPosition: {x: 250, y: 100, z: 40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &320690139
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320690134}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &320690140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320690134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3406c4cdde33f654d9f8faf8371e48f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 219169453}
+  self: {fileID: 320690139}
+  targetBody: {fileID: 219169458}
+  bullet: {fileID: 4957889445026184795, guid: 94d4f081eef8fc842a344ea15fd7e7af, type: 3}
+--- !u!114 &320690141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320690134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29ecb2c13d24b3444ada7d2f1b2f86cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  self: {fileID: 320690134}
 --- !u!1 &508410741
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1537,8 @@ MonoBehaviour:
   heatMax: 0
   massCost: 0
   energyCost: 0
+  massCostPerTick: 0
+  energyCostPerTick: 0
   massProd: 0
   energyProd: 0
   projectileDmg: 0
@@ -3952,7 +4019,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2087235468}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 140.21, y: 68.05, z: 22.51}
+  m_LocalPosition: {x: 265.4, y: 82.32, z: -35.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

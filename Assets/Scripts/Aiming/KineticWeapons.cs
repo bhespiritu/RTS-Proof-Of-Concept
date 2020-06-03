@@ -118,25 +118,25 @@ public class KineticWeapons : MonoBehaviour
         // Debug.DrawRay(transform.position, 5 * v3.normalized, Color.red);
         //Debug.DrawRay(transform.position, 5 * v5.normalized, Color.yellow);
         // Debug.DrawRay(transform.position, 5 * v6.normalized, Color.black);
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(2))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();
             r.velocity = v4;
         }
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(2))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();
             r.velocity = v3;
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(2))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();
             r.velocity = v5;
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(2))
         {
             GameObject instance = Instantiate(bullet, transform.position, Quaternion.identity);
             Rigidbody r = instance.GetComponent<Rigidbody>();
