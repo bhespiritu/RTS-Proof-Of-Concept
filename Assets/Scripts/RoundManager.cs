@@ -104,6 +104,7 @@ public class RoundManager : MonoBehaviour
             if (InputTick())
             {
                 subTick++;
+                OnRoundTick?.Invoke();
             }
         }
         else //update main game cycle
