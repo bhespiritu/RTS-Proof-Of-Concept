@@ -14,6 +14,8 @@ using UnityEngine;
  */
 public class Building : MonoBehaviour
 {
+    ulong uID;
+
     public GameObject buildingPrefab;
     public GameObject buildingPrefab1;
     public GameObject buildingPrefab2;

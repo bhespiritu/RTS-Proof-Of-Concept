@@ -9,10 +9,10 @@ public class UnitManager
 
     public static UnitManager INSTANCE = new UnitManager();
 
+    public Dictionary<ulong, Unit> unitLookup { get; private set; }
+
     private List<Unit> unitList;
     private List<Vector3> unitPoints;
-
-    private static uint globalID = 0;
 
 
     private UnitManager()
@@ -28,8 +28,8 @@ public class UnitManager
     public void SpawnUnit(Vector2 position)
     {
         Unit u = new Unit();
-        //TODO add in spawn placement
-        u.uID = globalID++;
+        u.uID = RoundManager.INSTANCE.requestUID;
+        unitLookup.Add(u.uID, u);
     }
 
 }

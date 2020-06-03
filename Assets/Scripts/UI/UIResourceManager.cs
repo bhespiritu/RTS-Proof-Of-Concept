@@ -10,7 +10,7 @@ public class UIResourceManager : MonoBehaviour
 
     private void Start()
     {
-        RoundTimeManager.OnRoundTick += onTick;
+        RoundManager.OnRoundTick += onTick;
     }
     void onTick()
     {

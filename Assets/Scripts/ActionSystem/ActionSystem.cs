@@ -6,7 +6,13 @@ using UnityEngine;
 //TODO: enable storing actions of multiple players
 public class ActionSystem
 {
-   
+
+    public RoundManager roundManager;
+
+    public ActionSystem(RoundManager rm)
+    {
+        roundManager = rm;
+    }
 
     Queue<IAction> actionQueue;
 
@@ -37,8 +43,6 @@ public class ActionSystem
 
 public interface IAction
 {
-
-    
     void ProcessAction(ActionSystem ctx);
 }
 
@@ -55,10 +59,15 @@ public class Move : IAction
 {
     public Vector2 targetPosition;
 
-    public Unit[] targetUnits;
+    public ulong[] targets;
 
     public void ProcessAction(ActionSystem ctx)
     {
+        Unit[] targetUnits = new Unit[targets.Length];
+        for(int i = 0; i < targets.Length; i++)
+        {
+            targetUnits[i] = ctx.roundManager.unitManager.unitLookup[targets[i]];
+        }
         bool needsNewGroup = false;
         UnitGroup group = targetUnits[0].associatedPathfindingGroup;
         for(int i = 1; i < targetUnits.Length; i++)
@@ -68,7 +77,7 @@ public class Move : IAction
 
         if(group == null || needsNewGroup)
         {
-            UnitGroup newGroup = new UnitGroup(null);// ctx.path; //TODO add in reference to PathfindingManager
+            UnitGroup newGroup = new UnitGroup();// ctx.path; //TODO add in reference to PathfindingManager
             foreach(Unit u in targetUnits)
             {
                 newGroup.AddUnit(u);
