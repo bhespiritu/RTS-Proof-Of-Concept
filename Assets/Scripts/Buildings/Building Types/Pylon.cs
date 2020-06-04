@@ -7,8 +7,8 @@ public class Pylon : MonoBehaviour
 {
     private int buffGiven = 1;
     private int cost;
-    private int costPS;
-    private int energyCostPS;
+    private int costPT;
+    private int energyCostPT;
     private int energyCostTotal;
     private int bldInt = 6;
 
@@ -49,18 +49,18 @@ public class Pylon : MonoBehaviour
     {
         return cost;
     }
-    public int getCostPS()
+    public int getCostPT()
     {
-        return costPS;
+        return costPT;
     }
 
     public int getEnergyCost()
     {
         return energyCostTotal;
     }
-    public int getEnergyCostPS()
+    public int getEnergyCostPT()
     {
-        return energyCostPS;
+        return energyCostPT;
     }
 
     internal GameObject getBuildingPrefab()

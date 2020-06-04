@@ -20,8 +20,6 @@ using UnityEngine;
 public class Factory : MonoBehaviour
 {
     private int bld = 5;
-    private int cost ;
-    private int costPS;
     private int energyCostPT;
     private int energyCostTotal;
 
@@ -106,7 +104,6 @@ public class Factory : MonoBehaviour
 
     public void place(Player p)
     {
-        Debug.Log("Placing Factory");
         isPlaced = true;
         player = p;
         buildSelf();
@@ -136,16 +133,7 @@ public class Factory : MonoBehaviour
     {
         return placeable;
     }
-
-    public int getCost()
-    {
-        return cost;
-    }
-    public int getCostPS()
-    {
-        return costPS;
-    }
-
+    
     public int getEnergyCost()
     {
         return energyCostTotal;
@@ -244,7 +232,6 @@ public class Factory : MonoBehaviour
     }
     private void changeMesh(Material m)
     {
-        Debug.Log(m);
         mesh.material = m;
         foreach (Transform child in gameObject.transform)
         {

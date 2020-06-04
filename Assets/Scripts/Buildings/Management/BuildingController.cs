@@ -24,7 +24,6 @@ public class BuildingController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        Debug.Log("Getting int");
         if (gameObject.TryGetComponent<MassProducer>(out MassProducer m))
         {
             bldInt = m.GetBldInt();
@@ -38,9 +37,7 @@ public class BuildingController : MonoBehaviour
 
         if (gameObject.TryGetComponent<Factory>(out Factory f))
         {
-            Debug.Log("Identified as Factory");
             bldInt = f.GetBldInt();
-            Debug.Log("In buildingController bldInt is: " + bldInt);
         }
 
         if (gameObject.TryGetComponent<Pylon>(out Pylon p))
@@ -51,13 +48,11 @@ public class BuildingController : MonoBehaviour
 
     public int getBldType()
     {
-        Debug.Log("Returning the int: " + bldInt);
         return bldInt;
     }
 
     public GameObject getBuildingPrefab()
     {
-        Debug.Log(bldInt);
         switch (bldInt)
         {
             case (3):
@@ -65,7 +60,6 @@ public class BuildingController : MonoBehaviour
             case (4):
                 return gameObject.GetComponent<EnergyProducer>().getBuildingPrefab();
             case (5):
-                Debug.Log("Fetching Building Prefab");
                 return gameObject.GetComponent<Factory>().getBuildingPrefab();
             case (6):
                 return gameObject.GetComponent<Pylon>().getBuildingPrefab();

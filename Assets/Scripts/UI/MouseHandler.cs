@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
+/*
+* TODO Make a method to check if the mouse is over a UI element
+*/
 public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField]
@@ -140,6 +143,7 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     private void Update()
     {
+
         switch (mouseMode)
         {
             case (MouseMode.Placement):
@@ -186,7 +190,7 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
                 }
 
-                //Rotate Left?
+                //Rotate Left
                 if (Input.GetKeyDown(KeyCode.A))
                 {
                     Vector3 temp = cursor.transform.forward;
@@ -194,14 +198,24 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                     temp.x = -cursor.transform.forward.z;
                     temp.z = cursor.transform.forward.x;
                     localForward = temp;
+                    cursor.transform.forward = localForward;
+                }
+                //Rotate Right
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    Vector3 temp = cursor.transform.forward;
 
+                    temp.x = cursor.transform.forward.z;
+                    temp.z = -cursor.transform.forward.x;
+                    localForward = temp;
+                    cursor.transform.forward = localForward;
                 }
 
 
                 if (Input.GetMouseButtonDown(0))
                 {
-
-                    if (bldPlacer.checkPosition(cursor))
+                    //Replace the raycast with the ability to detect if the mouse is over a ui element
+                    if (bldPlacer.checkPosition(cursor) && Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask))
                     {
                         bldPlacer.PlaceBuildingNear(cursor);
                     }
@@ -224,7 +238,6 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             childMesh.material = placeable;
         }
     }
-
 
     public MouseMode GetMouseMode()
     {
@@ -263,7 +276,6 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void SwitchToPlacement(GameObject buildingPrefab)
     {
-        Debug.Log("Switching to placement mode");
         mouseMode = MouseMode.Placement;
         //Find the grid, stores information about whether a space is placeable
         //Glowy construct of where the building will be placed
