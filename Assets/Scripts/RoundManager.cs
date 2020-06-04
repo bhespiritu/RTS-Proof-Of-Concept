@@ -18,10 +18,12 @@ using UnityEngine;
  *   - Will be accessible through the AddAction method
  * */
 
-public class RoundTimeManager : MonoBehaviour
+public class RoundManager : MonoBehaviour
 {
     #region Fields
-    public static RoundTimeManager INSTANCE;
+    public static RoundManager INSTANCE;
+
+
 
     List<Player> players = new List<Player>();
 
@@ -42,11 +44,16 @@ public class RoundTimeManager : MonoBehaviour
     public static event TickEvent OnRoundTick;
 
     private ActionSystem actionSystem;
+
+    public BuildingManager buildingManager { get; private set; }
+    public UnitManager unitManager { get; private set; }
+
+    private ulong uIDCount = 0;
     #endregion
 
-    public RoundTimeManager()
+    public RoundManager()
     {
-        actionSystem = new ActionSystem();
+        actionSystem = new ActionSystem(this);
     }
 
     public void Awake()
@@ -97,6 +104,7 @@ public class RoundTimeManager : MonoBehaviour
             if (InputTick())
             {
                 subTick++;
+                OnRoundTick?.Invoke();
             }
         }
         else //update main game cycle
@@ -121,7 +129,6 @@ public class RoundTimeManager : MonoBehaviour
         if(canMoveOn)
         {
             _inputTickCount++;
-
             actionSystem.performAction();
         }
 
@@ -131,6 +138,7 @@ public class RoundTimeManager : MonoBehaviour
     public bool CanDoNextStep()
     {
         //TODO add in any logic that should be checked before advancing time
+        //This isn't needed yet because there aren't multiple players yet.
         return true;
     }
 
@@ -183,6 +191,8 @@ public class RoundTimeManager : MonoBehaviour
             return Time.time - startTime;
         }
     }
+
+    public ulong requestUID => uIDCount++;//Placeholder code
     #endregion
 
 }

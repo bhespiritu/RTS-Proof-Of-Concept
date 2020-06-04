@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     void Awake()
     {
         requests = new List<Requester>();
-        RoundTimeManager.OnRoundTick += onTick;
+        RoundManager.OnRoundTick += onTick;
     }
 
     // Update is called once per frame

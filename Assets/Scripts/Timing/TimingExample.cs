@@ -8,15 +8,15 @@ public class TimingExample : MonoBehaviour
 
     void OnEnable()
     {
-        RoundTimeManager.OnRoundStart += OnStart;
-        RoundTimeManager.OnRoundTick += OnTick;
+        RoundManager.OnRoundStart += OnStart;
+        RoundManager.OnRoundTick += OnTick;
     }
 
 
     void OnDisable()
     {
-        RoundTimeManager.OnRoundStart -= OnStart;
-        RoundTimeManager.OnRoundTick -= OnTick;
+        RoundManager.OnRoundStart -= OnStart;
+        RoundManager.OnRoundTick -= OnTick;
     }
 
     public void OnStart()
@@ -26,7 +26,7 @@ public class TimingExample : MonoBehaviour
 
     public void OnTick()
     {
-        gameObject.transform.position = Vector3.up * (Mathf.Sin(RoundTimeManager.INSTANCE.currentTime) + 2);
+        gameObject.transform.position = Vector3.up * (Mathf.Sin(RoundManager.INSTANCE.currentTime) + 2);
     }
 
 }

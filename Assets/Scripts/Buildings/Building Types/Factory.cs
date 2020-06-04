@@ -68,7 +68,7 @@ public class Factory : MonoBehaviour
         notConstructed = buildPlacer.notConstructed;
         finishedConstructing = buildPlacer.finishedConstructing;
         changeMesh(notConstructed);
-        RoundTimeManager.OnRoundTick += onTick;
+        RoundManager.OnRoundTick += onTick;
         
     }
 

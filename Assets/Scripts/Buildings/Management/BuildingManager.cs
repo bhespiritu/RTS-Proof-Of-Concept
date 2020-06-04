@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
 {
+
+    Dictionary<ulong, Building> buildingLookup;
+
     // Start is called before the first frame update
     void Start()
     {

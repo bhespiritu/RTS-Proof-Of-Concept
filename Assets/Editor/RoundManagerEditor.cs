@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(RoundTimeManager))]
-public class RoundTimeManagerEditor : Editor
+[CustomEditor(typeof(RoundManager))]
+public class RoundManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -12,7 +12,7 @@ public class RoundTimeManagerEditor : Editor
 
         if (GUILayout.Button("Start Round"))
         {
-            ((RoundTimeManager)target).StartRound();
+            ((RoundManager)target).StartRound();
         }
     }
 }
