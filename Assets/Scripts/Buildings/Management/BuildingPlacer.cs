@@ -25,7 +25,7 @@ public class BuildingPlacer : MonoBehaviour
     public Material notConstructed;
     public Material finishedConstructing;
 
-    private GameObject buildingPrefab;
+    private GameObject factoryPrefab;
 
     public LayerMask placementLayerMask;
 
@@ -83,7 +83,7 @@ public class BuildingPlacer : MonoBehaviour
     
     public void PlaceBuildingNear(GameObject cursor){
         //Place the object based on the normal
-        GameObject build = GameObject.Instantiate(buildingPrefab);
+        GameObject build = GameObject.Instantiate(cursor.GetComponent<BuildingController>().getBuildingPrefab());
         
         build.transform.position = cursor.transform.position;
         build.transform.rotation = cursor.transform.rotation;
@@ -95,6 +95,11 @@ public class BuildingPlacer : MonoBehaviour
             grid.updateBuilding(child.position.x, child.position.z, building.getBldType());
             building.place(build);
         }
+    }
+
+    public GameObject getFactoryPrefab()
+    {
+        return factoryPrefab;
     }
 
 }

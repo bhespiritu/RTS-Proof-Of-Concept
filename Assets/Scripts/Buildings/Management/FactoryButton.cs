@@ -5,21 +5,23 @@ using UnityEngine;
 public class FactoryButton : MonoBehaviour
 {
 
-    private GameObject buildingPrefab;
-
-    public GameObject cursor;
-
-    public Material placeable;
-    public Material unplaceable;
-
-    private MeshRenderer mesh;
-    private MeshRenderer childMesh;
-    private BuildingController building;
-    public Player player;
+    public GameObject buildingPrefab;
 
     public MouseHandler msHandler;
-    void OnClick()
+    public void OnClick()
     {
-        msHandler.SwitchToPlacement(buildingPrefab.GetComponent<BuildingController>());
+        //If the user was placing a factory, stop.
+        Debug.Log("Cursor type int " + msHandler.GetCursorType());
+        Debug.Log("factory type int " + buildingPrefab.GetComponent<BuildingController>().getBldType());
+        Debug.Log(msHandler.GetMouseMode());
+        if (msHandler.GetMouseMode() == MouseMode.Placement && msHandler.GetCursorType() == buildingPrefab.GetComponent<BuildingController>().getBldType())
+        {
+            msHandler.SwitchToSelect();
+        }
+        else
+        {
+            msHandler.SwitchToPlacement(buildingPrefab);
+
+        }
     }
 }

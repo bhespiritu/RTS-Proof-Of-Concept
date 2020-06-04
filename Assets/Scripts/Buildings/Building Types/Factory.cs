@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.UI;
@@ -24,7 +25,8 @@ public class Factory : MonoBehaviour
     private int energyCostPT;
     private int energyCostTotal;
 
-
+    //Will likely get replaced with a call to a class that stores prefabs. LIKE BUILDING PLACER OOH
+    public GameObject prefab;
     public Player player;
 
     public Unit unit;
@@ -72,9 +74,9 @@ public class Factory : MonoBehaviour
         
     }
 
-    internal GameObject getBuildingPrefab()
+    public GameObject getBuildingPrefab()
     {
-        throw new NotImplementedException();
+        return prefab;
     }
 
     // Update is called once per frame

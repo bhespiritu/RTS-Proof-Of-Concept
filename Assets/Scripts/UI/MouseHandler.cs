@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [SerializeField]
     Image selectionImage;
     Vector2 clickStart;
+
     Rect selectRect;
 
     public MouseMode mouseMode = MouseMode.Select;//TODO change behaviour based on mode.
@@ -223,6 +225,27 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         }
     }
 
+
+    public MouseMode GetMouseMode()
+    {
+        return mouseMode;
+    }
+
+    public void SwitchToSelect()
+    {
+        mouseMode = MouseMode.Select;
+    }
+
+    public int GetCursorType()
+    {
+        if(cursor == null)
+        {
+            return 0;
+        }
+        return cursor.GetComponent<BuildingController>().getBldType();
+    }
+
+
     //Objects necessary for building placement
     private GameObject buildingPrefab;
     public Player player;
@@ -233,10 +256,10 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public Material placeable;
     public Material unplaceable;
 
-    public void SwitchToPlacement(BuildingController building)
+    public void SwitchToPlacement(GameObject buildingPrefab)
     {
-        building.givePlayer(player);
-        buildingPrefab = building.getBuildingPrefab();
+        Debug.Log("Switching to placement mode");
+        mouseMode = MouseMode.Placement;
         //Find the grid, stores information about whether a space is placeable
         //Glowy construct of where the building will be placed
         cursor = Instantiate(buildingPrefab);
@@ -249,6 +272,8 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             childMesh = child.GetComponent<MeshRenderer>();
             childMesh.material = placeable;
         }
+        BuildingController building = buildingPrefab.GetComponent<BuildingController>();
+        building.givePlayer(player);
     }
 }
 
