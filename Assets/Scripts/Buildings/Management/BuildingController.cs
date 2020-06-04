@@ -40,7 +40,7 @@ public class BuildingController : MonoBehaviour
         {
             Debug.Log("Identified as Factory");
             bldInt = f.GetBldInt();
-            Debug.Log(bldInt);
+            Debug.Log("In buildingController bldInt is: " + bldInt);
         }
 
         if (gameObject.TryGetComponent<Pylon>(out Pylon p))
@@ -51,6 +51,7 @@ public class BuildingController : MonoBehaviour
 
     public int getBldType()
     {
+        Debug.Log("Returning the int: " + bldInt);
         return bldInt;
     }
 
@@ -74,21 +75,21 @@ public class BuildingController : MonoBehaviour
 
 
     //Calls the placement function for each building type
-    public void place(GameObject placement)
+    public void Place()
     {
         switch (bldInt)
         {
             case 3:
-                placement.GetComponent<MassProducer>().place();
+                gameObject.GetComponent<MassProducer>().place();
                 break;
             case 4:
-                placement.GetComponent<EnergyProducer>().place(player);
+                gameObject.GetComponent<EnergyProducer>().place(player);
                 break;
             case 5:
-                placement.GetComponent<Factory>().place(player);
+                gameObject.GetComponent<Factory>().place(player);
                 break;
             case 6:
-                placement.GetComponent<Pylon>().place();
+                gameObject.GetComponent<Pylon>().place();
                 break;
             
         }

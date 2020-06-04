@@ -10,11 +10,8 @@ public class FactoryButton : MonoBehaviour
     public MouseHandler msHandler;
     public void OnClick()
     {
-        //If the user was placing a factory, stop.
-        Debug.Log("Cursor type int " + msHandler.GetCursorType());
-        Debug.Log("factory type int " + buildingPrefab.GetComponent<BuildingController>().getBldType());
-        Debug.Log(msHandler.GetMouseMode());
-        if (msHandler.GetMouseMode() == MouseMode.Placement && msHandler.GetCursorType() == buildingPrefab.GetComponent<BuildingController>().getBldType())
+        //If the user was placing a factory, stop   
+        if (msHandler.GetMouseMode() == MouseMode.Placement && msHandler.GetCursorType() == 5)
         {
             msHandler.SwitchToSelect();
         }

@@ -234,6 +234,11 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public void SwitchToSelect()
     {
         mouseMode = MouseMode.Select;
+        if(cursor!= null)
+        {
+            Destroy(cursor);
+            cursor = null;
+        }
     }
 
     public int GetCursorType()

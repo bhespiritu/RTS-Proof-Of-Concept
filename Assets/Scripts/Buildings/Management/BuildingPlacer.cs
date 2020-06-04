@@ -89,12 +89,14 @@ public class BuildingPlacer : MonoBehaviour
         build.transform.rotation = cursor.transform.rotation;
 
         //update the grid
-        grid.updateBuilding(build.transform.position.x, build.transform.position.z, building.getBldType());
+        int bldInt = build.GetComponent<BuildingController>().getBldType();
+        grid.updateBuilding(build.transform.position.x, build.transform.position.z, bldInt);
         foreach (Transform child in cursor.transform)
         {
-            grid.updateBuilding(child.position.x, child.position.z, building.getBldType());
-            building.place(build);
+            grid.updateBuilding(child.position.x, child.position.z, bldInt);
+            //building.place(build);
         }
+        build.GetComponent<BuildingController>().Place();
     }
 
     public GameObject getFactoryPrefab()

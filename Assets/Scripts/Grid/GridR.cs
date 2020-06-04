@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 /*
@@ -20,6 +21,8 @@ public class GridR : MonoBehaviour
     public LayerMask placementLayerMask;
 
     public LayerMask buildingsLayerMask;
+
+    public LayerMask waterLayer;
 
     // # of units between grid points
     [SerializeField]
@@ -166,7 +169,13 @@ public class GridR : MonoBehaviour
                 bldSpots[i, j] = 0;
             }
         }
+        /*This basically says all water is less than 46 in height. Could replace to raycasting to check if it hits water instead. Replaced by CheckWater
         if(min <= 46 && max <= 46) { 
+            bldSpots[i, j] = -2;
+            return;
+        }*/
+        if (CheckWater(i,j))
+        {
             bldSpots[i, j] = -2;
             return;
         }
@@ -184,6 +193,32 @@ public class GridR : MonoBehaviour
             if (Mathf.Rad2Deg * Mathf.Atan((max - min) / spacing) <= 30) { bldSpots[i, j] = -1; }
             else { bldSpots[i, j] = 0; }
         }
+    }
+
+    private bool CheckWater(int i, int j)
+    {
+        RaycastHit hitInfo;
+        if (Physics.Raycast(new Vector3(i, 750, j), Vector3.down, out hitInfo, Mathf.Infinity, waterLayer))
+        {
+            return true;
+        }
+
+        if (Physics.Raycast(new Vector3(i + (int)spacing, 750, j), Vector3.down, out hitInfo, Mathf.Infinity, waterLayer))
+        {
+            return true;
+        }
+
+        if (Physics.Raycast(new Vector3(i, 750, j + (int)spacing), Vector3.down, out hitInfo, Mathf.Infinity, waterLayer))
+        {
+            return true;
+        }
+
+        if (Physics.Raycast(new Vector3(i + (int)spacing, 750, j + (int)spacing), Vector3.down, out hitInfo, Mathf.Infinity, waterLayer))
+        {
+            return true;
+        }
+
+        return false;
     }
     public float getSpacing()
     {

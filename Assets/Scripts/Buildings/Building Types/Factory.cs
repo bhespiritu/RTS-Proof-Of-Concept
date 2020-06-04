@@ -106,6 +106,7 @@ public class Factory : MonoBehaviour
 
     public void place(Player p)
     {
+        Debug.Log("Placing Factory");
         isPlaced = true;
         player = p;
         buildSelf();
