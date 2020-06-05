@@ -108,7 +108,23 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     private void HandleRightClick(PointerEventData eventData)
     {
-        throw new NotImplementedException();
+        switch (mouseMode)
+        {
+            case MouseMode.Select:
+                {
+
+                    Ray clickWorldRay = Camera.main.ScreenPointToRay(eventData.position);
+                    if (Physics.Raycast(clickWorldRay, out clickCast))
+                    {
+                        Vector3 target = clickCast.point;
+                    }
+                    break;
+                }
+            case MouseMode.Placement:
+                {
+                    break;
+                }
+        }
     }
 
     private void HandleLeftClick(PointerEventData eventData)
