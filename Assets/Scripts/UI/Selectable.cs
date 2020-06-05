@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Selectable : MonoBehaviour
 {
+    public enum SelectedType
+    {
+        NULL, UNIT, BUILDING
+    }
+
+    public SelectedType type;
+
     public static List<Selectable> allSelectable = new List<Selectable>();
 
     public GameObject selectionObject;

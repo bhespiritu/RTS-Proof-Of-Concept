@@ -20,63 +20,72 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     List<Selectable> selected = new List<Selectable>();
 
-    public Material selectedMat;
-    public Material unselectedMat;
-
     public LayerMask selectionMask;
 
     public GameObject selectionPrefab;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        selectionImage.gameObject.SetActive(true);
-        clickStart = eventData.position;
-        selectRect = new Rect();
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            selectionImage.gameObject.SetActive(true);
+            clickStart = eventData.position;
+            selectRect = new Rect();
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (eventData.position.x < clickStart.x)
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
-            selectRect.xMin = eventData.position.x;
-            selectRect.xMax = clickStart.x;
-        }
-        else
-        {
-            selectRect.xMin = clickStart.x;
-            selectRect.xMax = eventData.position.x;
-        }
+            if (eventData.position.x < clickStart.x)
+            {
+                selectRect.xMin = eventData.position.x;
+                selectRect.xMax = clickStart.x;
+            }
+            else
+            {
+                selectRect.xMin = clickStart.x;
+                selectRect.xMax = eventData.position.x;
+            }
 
-        if (eventData.position.y < clickStart.y)
-        {
-            selectRect.yMin = eventData.position.y;
-            selectRect.yMax = clickStart.y;
-        }
-        else
-        {
-            selectRect.yMin = clickStart.y;
-            selectRect.yMax = eventData.position.y;
-        }
+            if (eventData.position.y < clickStart.y)
+            {
+                selectRect.yMin = eventData.position.y;
+                selectRect.yMax = clickStart.y;
+            }
+            else
+            {
+                selectRect.yMin = clickStart.y;
+                selectRect.yMax = eventData.position.y;
+            }
 
-        selectionImage.rectTransform.offsetMin = selectRect.min;
-        selectionImage.rectTransform.offsetMax = selectRect.max;
+            selectionImage.rectTransform.offsetMin = selectRect.min;
+            selectionImage.rectTransform.offsetMax = selectRect.max;
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            //CANCEL Select
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!Input.GetKey(KeyCode.LeftControl))
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
-            DeselectAll();
-        }
-
-        selectionImage.gameObject.SetActive(false);
-        foreach(Selectable s in Selectable.allSelectable)
-        {
-            
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(s.transform.position);
-            if(selectRect.Contains(screenPos))
+            if (!Input.GetKey(KeyCode.LeftControl))
             {
-                Select(s);
+                DeselectAll();
+            }
+
+            selectionImage.gameObject.SetActive(false);
+            foreach (Selectable s in Selectable.allSelectable)
+            {
+                Vector3 screenPos = Camera.main.WorldToScreenPoint(s.transform.position);
+                if (selectRect.Contains(screenPos))
+                {
+                    Select(s);
+                }
             }
         }
     }
@@ -85,20 +94,49 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        
-        if (!Input.GetKey(KeyCode.LeftControl))
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
-            DeselectAll();
+            HandleLeftClick(eventData);
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            HandleRightClick(eventData);
         }
 
-        Ray clickWorldRay = Camera.main.ScreenPointToRay(eventData.position);
-        if (Physics.Raycast(clickWorldRay, out clickCast))
+        
+    }
+
+    private void HandleRightClick(PointerEventData eventData)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void HandleLeftClick(PointerEventData eventData)
+    {
+        switch (mouseMode)
         {
-            Selectable s = clickCast.transform.GetComponent<Selectable>();
-            if(s)
-            {
-                Select(s);
-            }
+            case MouseMode.Select:
+                {
+                    if (!Input.GetKey(KeyCode.LeftControl))
+                    {
+                        DeselectAll();
+                    }
+
+                    Ray clickWorldRay = Camera.main.ScreenPointToRay(eventData.position);
+                    if (Physics.Raycast(clickWorldRay, out clickCast))
+                    {
+                        Selectable s = clickCast.transform.GetComponent<Selectable>();
+                        if (s)
+                        {
+                            Select(s);
+                        }
+                    }
+                    break;
+                }
+            case MouseMode.Placement:
+                {
+                    break;
+                }
         }
     }
 
@@ -108,7 +146,6 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         {
             selected.Add(s);
             s.Select();
-            s.GetComponent<Renderer>().material = selectedMat;
 
             GameObject selectionCircle = Instantiate(selectionPrefab, s.transform);
             selectionCircle.transform.localPosition = Vector3.up * -0.5f;
@@ -122,7 +159,6 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         s.Deselect();
         if(removeItem)
             selected.Remove(s);
-        s.GetComponent<Renderer>().material = unselectedMat;
         Destroy(s.selectionObject.gameObject);
 
     }
