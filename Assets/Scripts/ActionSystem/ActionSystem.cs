@@ -8,10 +8,12 @@ public class ActionSystem
 {
 
     public RoundManager roundManager;
+    public bool debug = false;
 
     public ActionSystem(RoundManager rm)
     {
         roundManager = rm;
+        actionQueue = new Queue<IAction>();
     }
 
     Queue<IAction> actionQueue;
@@ -31,6 +33,7 @@ public class ActionSystem
         }
 
         action.ProcessAction(this);
+        if (debug) Debug.Log(roundManager.tickCount + ": " + action.DebugSerialize());
     }
 
     public void addAction(IAction a)
@@ -44,10 +47,16 @@ public class ActionSystem
 public interface IAction
 {
     void ProcessAction(ActionSystem ctx);
+    string DebugSerialize();
 }
 
 public class NoOp : IAction
 {
+    public string DebugSerialize()
+    {
+        return "NoOp";
+    }
+
     public void ProcessAction(ActionSystem ctx)
     {
         
@@ -55,18 +64,23 @@ public class NoOp : IAction
 }
 
 
-public class Move : IAction
+public class MoveOp : IAction
 {
     public Vector2 targetPosition;
 
     public ulong[] targets;
+
+    public string DebugSerialize()
+    {
+        return "Move to " + targetPosition;
+    }
 
     public void ProcessAction(ActionSystem ctx)
     {
         Unit[] targetUnits = new Unit[targets.Length];
         for(int i = 0; i < targets.Length; i++)
         {
-            targetUnits[i] = ctx.roundManager.unitManager.unitLookup[targets[i]];
+            targetUnits[i] = UnitManager.INSTANCE.unitLookup[targets[i]];
         }
         bool needsNewGroup = false;
         UnitGroup group = targetUnits[0].associatedPathfindingGroup;
@@ -77,15 +91,13 @@ public class Move : IAction
 
         if(group == null || needsNewGroup)
         {
-            UnitGroup newGroup = new UnitGroup();// ctx.path; //TODO add in reference to PathfindingManager
+            group = PathfindingManager.INSTANCE.formGroup();
             foreach(Unit u in targetUnits)
             {
-                newGroup.AddUnit(u);
+                group.AddUnit(u);
             }
 
-            newGroup.calculateGroupPosition();
-
-            group = newGroup;
+            group.calculateGroupPosition();
         } 
         group.targetPosition = targetPosition;
         group.UpdatePathfinding();
@@ -94,9 +106,14 @@ public class Move : IAction
     }
 }
 
-public class RequestUnit : IAction
+public class RequestUnitOp : IAction
 {
     BuildingController targetBuilding;
+
+    public string DebugSerialize()
+    {
+        throw new System.NotImplementedException();
+    }
 
     public void ProcessAction(ActionSystem ctx)
     {

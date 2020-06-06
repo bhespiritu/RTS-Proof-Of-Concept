@@ -25,11 +25,6 @@ public class PathfindingManager : MonoBehaviour
 
     public static PathfindingManager INSTANCE;
 
-    public GameObject debugObject;
-    public Unit[] debugList;
-
-    private UnitGroup debugGroup;
-
     List<UnitGroup> groups = new List<UnitGroup>();
 
     public float avoidanceWeight = 1;
@@ -40,10 +35,7 @@ public class PathfindingManager : MonoBehaviour
     public void Start()
     {
         flowFieldHandler = GetComponent<FlowFieldHandler>();
-        debugGroup = new UnitGroup();
-        debugList = (Unit[])FindObjectsOfType(typeof(Unit));
-        foreach (Unit u in debugList) debugGroup.AddUnit(u);
-        groups.Add(debugGroup);
+
     }
 
     public UnitGroup formGroup()

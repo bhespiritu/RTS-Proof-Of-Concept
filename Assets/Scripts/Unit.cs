@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public ulong uID;
+    public ulong uID = ulong.MaxValue;
 
     [Header("General Attributes")]
     public string name;
@@ -50,7 +50,8 @@ public class Unit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //REMOVE LATER
+        if (uID == ulong.MaxValue) UnitManager.INSTANCE.AddUnit(this);
     }
 
     // Update is called once per frame

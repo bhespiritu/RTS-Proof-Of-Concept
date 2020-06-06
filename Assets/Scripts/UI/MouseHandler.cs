@@ -117,6 +117,18 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                     if (Physics.Raycast(clickWorldRay, out clickCast))
                     {
                         Vector3 target = clickCast.point;
+                        Vector2 pathTarget = new Vector2(target.x, target.z);
+
+                        MoveOp action = new MoveOp();
+
+                        action.targets = new ulong[selected.Count];
+                        for(int i = 0; i < selected.Count; i++)
+                        {
+                            action.targets[i] = selected[i].getID();
+                        }
+                        
+                        action.targetPosition = pathTarget;
+                        RoundManager.INSTANCE.actionSystem.addAction(action);
                     }
                     break;
                 }

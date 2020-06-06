@@ -43,7 +43,7 @@ public class RoundManager : MonoBehaviour
     public delegate void TickEvent();
     public static event TickEvent OnRoundTick;
 
-    private ActionSystem actionSystem;
+    public ActionSystem actionSystem;
 
     public BuildingManager buildingManager { get; private set; }
     public UnitManager unitManager { get; private set; }
@@ -104,7 +104,6 @@ public class RoundManager : MonoBehaviour
             if (InputTick())
             {
                 subTick++;
-                OnRoundTick?.Invoke();
             }
         }
         else //update main game cycle
@@ -114,7 +113,7 @@ public class RoundManager : MonoBehaviour
             OnRoundTick?.Invoke();
             
             subTick++;
-            if (subTick == TicksPerInputStep)
+            if (subTick >= TicksPerInputStep)
             {
                 subTick = 0;
             }

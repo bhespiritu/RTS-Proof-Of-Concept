@@ -34,8 +34,6 @@ public class FlowFieldHandler : MonoBehaviour
     public static GridR grid;
 
     GridDataChunk[,] mapData;
-    
-    public static PathRequest testRequest;
 
     public void Awake()
     {
@@ -52,8 +50,6 @@ public class FlowFieldHandler : MonoBehaviour
         navGraph = generateGraph();
 
         pathfinding = new AStarPathfinding();
-
-        testRequest = requestPath(Vector2.zero, new Vector2(70, 70));
     }
 
     public PathRequest requestPath(Vector2 start, Vector2 end)
@@ -436,24 +432,7 @@ public class FlowFieldHandler : MonoBehaviour
         }
 
 
-        if (testRequest != null)
-        {
-            foreach (KeyValuePair<Vector2Int, FlowGrid> pair in testRequest.chunkSteps)
-            {
 
-                for (int i = 0; i < FlowGrid.gridResolution; i++)
-                {
-                    for (int j = 0; j < FlowGrid.gridResolution; j++)
-                    {
-
-                        Vector3 dir = FlowGrid.GetDirection(pair.Value.directionField[i, j]);
-                        //Debug.DrawRay(new Vector3(i, 0, j)*10 + 10*FlowGrid.gridResolution*new Vector3(pair.Key.x,0,pair.Key.y),Vector3.up * pair.Value.integrationField[i,j]/50);
-                        Handles.Label(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x, 0, pair.Key.y), pair.Value.integrationField[i, j] + "");
-                        Debug.DrawRay(new Vector3(i, 0, j) * 10 + 10 * FlowGrid.gridResolution * new Vector3(pair.Key.x, 0, pair.Key.y), dir * 5);
-                    }
-                }
-            }
-        }
 
 
 
