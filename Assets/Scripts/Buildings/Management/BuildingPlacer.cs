@@ -19,6 +19,7 @@ public class BuildingPlacer : MonoBehaviour
 
     public GridR grid;
     public Player player;
+    public GameObject gui;
 
     public Material placeable;
     public Material unplaceable;
@@ -28,8 +29,8 @@ public class BuildingPlacer : MonoBehaviour
     private GameObject factoryPrefab;
 
     public LayerMask placementLayerMask;
-
     public LayerMask buildingsLayerMask;
+
 
     private BuildingController building;
 
@@ -96,7 +97,7 @@ public class BuildingPlacer : MonoBehaviour
             grid.updateBuilding(child.position.x, child.position.z, bldInt);
             //building.place(build);
         }
-        build.GetComponent<BuildingController>().Place();
+        build.GetComponent<BuildingController>().Place(player,gui);
     }
 
     public GameObject getFactoryPrefab()

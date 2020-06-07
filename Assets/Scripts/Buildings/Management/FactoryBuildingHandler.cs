@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class FactoryBuildingHandler : MonoBehaviour
 {
     [SerializeField]
-    public GameObject gui;
+    private GameObject gui;
     public GameObject panel;
     public GameObject button;
 
@@ -17,14 +17,19 @@ public class FactoryBuildingHandler : MonoBehaviour
     void Start()
     {
         uiElements = new List<GameObject>();
-        GameObject square = Instantiate(panel,gui.transform);
+    }
+    //Test method to make a blue square in the gui
+    public void CreateSquare()
+    {
+        GameObject square = Instantiate(panel, gui.transform);
         square.transform.SetParent(gui.transform);
         square.transform.localScale = new Vector3(.2f, .2f, .2f);
         square.transform.localPosition = gui.transform.localPosition + new Vector3(-940, -1000);
-        if(square.TryGetComponent<Image>(out Image i)){
+        if (square.TryGetComponent<Image>(out Image i))
+        {
             i.color = Color.blue;
         }
-        //square.SetActive(false);
+        square.SetActive(false);
         uiElements.Add(square);
     }
 
@@ -33,5 +38,27 @@ public class FactoryBuildingHandler : MonoBehaviour
         return uiElements;
     }
 
-  
+    public void GiveGui(GameObject g)
+    {
+        gui = g;
+        CreateSquare(); //The elements don't need to be created here if no reference to the gui is used in their creation
+    }
+
+    //Activate elements should be called on select and deactivate on deselect. Only if it's the only thing selected however.
+    public void ActivateElements()
+    {
+        foreach(GameObject g in uiElements)
+        {
+            g.SetActive(true);
+        }
+    }
+
+    public void DeactivateElements()
+    {
+        foreach (GameObject g in uiElements)
+        {
+            g.SetActive(false);
+        }
+    }
+
 }

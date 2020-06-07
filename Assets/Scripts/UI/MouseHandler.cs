@@ -9,6 +9,9 @@ using System;
 * TODO:
 * Make a method to check if the mouse is over a UI element
 * Make selection only happen during selection mode
+* Selection circle shows up under the list of objects in the cursors transfrom. This messes up the mesh changing. 
+*   The cursor needs to make a list of what objects it wants to change the mesh of. Or to ignore the circle
+*   Preferably the selection object shouldn't be added to cursor at all, as it won't be added when not in selection mode.
 */
 public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {

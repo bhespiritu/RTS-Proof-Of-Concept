@@ -25,7 +25,8 @@ public class Factory : MonoBehaviour
 
     //Will likely get replaced with a call to a class that stores prefabs. LIKE BUILDING PLACER OOH
     public GameObject prefab;
-    public Player player;
+    private Player player;
+    private GameObject gui;
 
     public Unit unit;
     private Unit unitConstructing;
@@ -57,6 +58,8 @@ public class Factory : MonoBehaviour
 
     private SortedSet<int> placeable = new SortedSet<int> { -1 };
 
+    List<Transform> children;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,12 +67,20 @@ public class Factory : MonoBehaviour
         grid = buildPlacer.GetComponent<GridR>();
         request = gameObject.GetComponent<Requester>();
         mesh = gameObject.GetComponent<MeshRenderer>();
-        //Todo make this a method
+
         notConstructed = buildPlacer.notConstructed;
         finishedConstructing = buildPlacer.finishedConstructing;
+
+        children = new List<Transform>();
+        foreach (Transform child in gameObject.transform)
+        {
+            children.Add(child);
+        }
+
         changeMesh(notConstructed);
         RoundManager.OnRoundTick += onTick;
-        
+        //Get a list of the actual physical buildings gameobjects
+       
     }
 
     public GameObject getBuildingPrefab()
@@ -102,10 +113,12 @@ public class Factory : MonoBehaviour
         return bld;
     }
 
-    public void place(Player p)
+    public void place(Player p , GameObject g)
     {
         isPlaced = true;
         player = p;
+        gui = g;
+        gameObject.GetComponent<FactoryBuildingHandler>().GiveGui(gui);
         buildSelf();
     }
 
@@ -120,6 +133,11 @@ public class Factory : MonoBehaviour
 
     public void Order(Unit u)
     {
+        if(u == null)
+        {
+            Debug.Log("Factory tried to add null Unit");
+            return;
+        }
         orders.Add(u);
     }
 
@@ -156,13 +174,24 @@ public class Factory : MonoBehaviour
         energyCostPT = 50;
         progress = 0;
         orders = new List<Unit>();
+        Debug.Log("orders is created. its count is: " + orders.Count);
         savedOrders = new List<Unit>();
     }
 
     public void build()
     {
         Debug.Log("Make a unit");
-        unitConstructing = orders[0];
+        unitConstructing = null;
+
+        if (orders.Count >= 1)
+        {
+            unitConstructing = orders[0];
+        }
+        if(unitConstructing = null)
+        {
+            producing = false;
+            return;
+        }
         orders.RemoveAt(0);
         producing = true;
 
@@ -219,8 +248,7 @@ public class Factory : MonoBehaviour
         {
             constructed = true; 
             changeMesh(finishedConstructing);
-            //Test lines to automatically build a unit
-            Order(unit);
+            //Order(unit);             //Test line to automatically build a unit
             if (orders.Count != 0)
             {
                 build();
@@ -230,10 +258,18 @@ public class Factory : MonoBehaviour
         Debug.Log("Finish");
         
     }
+
+    //Should change the mesh of every part of the building.
     private void changeMesh(Material m)
     {
         mesh.material = m;
-        foreach (Transform child in gameObject.transform)
+        /*foreach (Transform child in gameObject.transform)
+        {
+            child.gameObject.layer = 8;
+            childMesh = child.GetComponent<MeshRenderer>();
+            childMesh.material = m;
+        }*/
+        foreach (Transform child in children)
         {
             child.gameObject.layer = 8;
             childMesh = child.GetComponent<MeshRenderer>();

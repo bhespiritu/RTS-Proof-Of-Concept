@@ -69,7 +69,7 @@ public class BuildingController : MonoBehaviour
 
 
     //Calls the placement function for each building type
-    public void Place()
+    public void Place(Player player, GameObject gui)
     {
         switch (bldInt)
         {
@@ -80,7 +80,7 @@ public class BuildingController : MonoBehaviour
                 gameObject.GetComponent<EnergyProducer>().place(player);
                 break;
             case 5:
-                gameObject.GetComponent<Factory>().place(player);
+                gameObject.GetComponent<Factory>().place(player,gui);
                 break;
             case 6:
                 gameObject.GetComponent<Pylon>().place();
