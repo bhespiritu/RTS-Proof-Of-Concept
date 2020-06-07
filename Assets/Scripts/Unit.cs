@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public uint uID;
+    public ulong uID = ulong.MaxValue;
 
     [Header("General Attributes")]
     public string name;
@@ -50,7 +50,8 @@ public class Unit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //REMOVE LATER
+        if (uID == ulong.MaxValue) UnitManager.INSTANCE.AddUnit(this);
     }
 
     // Update is called once per frame
@@ -90,7 +91,13 @@ public class Unit : MonoBehaviour
     //Destroys the unit. Notifies unit manager, notifies killer for veterancy purposes
     void unitDeath()
     {
+        UnitManager.INSTANCE.unitLookup.Remove(uID);
         Destroy(gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        unitDeath();
     }
 
     public int getMCPT()

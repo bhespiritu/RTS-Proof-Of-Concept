@@ -13,13 +13,17 @@ public class PathfindingManager : MonoBehaviour
 
     public void Awake()
     {
-        RoundTimeManager.OnRoundTick += OnTick;
+        RoundManager.OnRoundTick += OnTick;
+        if(!INSTANCE || INSTANCE == null)
+        {
+            INSTANCE = this;
+        } else
+        {
+            Debug.Log("Attempt to create duplicate PathfindingManager");
+        }
     }
 
-    public GameObject debugObject;
-    public Unit[] debugList;
-
-    private UnitGroup debugGroup;
+    public static PathfindingManager INSTANCE;
 
     List<UnitGroup> groups = new List<UnitGroup>();
 
@@ -31,15 +35,12 @@ public class PathfindingManager : MonoBehaviour
     public void Start()
     {
         flowFieldHandler = GetComponent<FlowFieldHandler>();
-        debugGroup = new UnitGroup(this);
-        debugList = (Unit[])FindObjectsOfType(typeof(Unit));
-        foreach (Unit u in debugList) debugGroup.AddUnit(u);
-        groups.Add(debugGroup);
+
     }
 
     public UnitGroup formGroup()
     {
-        UnitGroup group = new UnitGroup(this);
+        UnitGroup group = new UnitGroup();
         groups.Add(group);
         return group;
     }
@@ -114,11 +115,10 @@ public class UnitGroup
 
     public Vector2 targetPosition;
 
-    private PathfindingManager pfm;//TODO research if it's better to have a static instance.
 
-    public UnitGroup(PathfindingManager parent)
+
+    public UnitGroup()
     {
-        pfm = parent;
     }
 
     public Vector3 desiredUnitDirection(int i)
@@ -131,7 +131,7 @@ public class UnitGroup
     public void UpdatePathfinding()
     {
         //TODO Detect if the new target requires a total recalculation
-        pathfindingData = pfm.flowFieldHandler.requestPath(groupPosition/10, targetPosition/10); //replace the magic numbers with the spacing constant in Grid R
+        pathfindingData = PathfindingManager.INSTANCE.flowFieldHandler.requestPath(groupPosition/10, targetPosition/10); //replace the magic numbers with the spacing constant in Grid R
     }
 
     public void calculateGroupPosition()

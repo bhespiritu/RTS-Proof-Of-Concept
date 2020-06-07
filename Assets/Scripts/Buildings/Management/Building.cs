@@ -8,6 +8,8 @@ using UnityEngine;
 public class Building : MonoBehaviour
 {
 
+    ulong uID;
+
     public List<GameObject> getElements()
     {
         if(TryGetComponent<FactoryBuildingHandler>(out FactoryBuildingHandler handler))
