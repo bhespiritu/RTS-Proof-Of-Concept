@@ -6,7 +6,9 @@ using UnityEngine.EventSystems;
 using System;
 
 /*
-* TODO Make a method to check if the mouse is over a UI element
+* TODO:
+* Make a method to check if the mouse is over a UI element
+* Make selection only happen during selection mode
 */
 public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
