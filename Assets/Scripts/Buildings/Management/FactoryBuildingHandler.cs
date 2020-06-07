@@ -6,21 +6,26 @@ using UnityEngine.UI;
 
 public class FactoryBuildingHandler : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject gui;
-    public GameObject panel;
-    public GameObject button;
-
     private List<GameObject> uiElements;
 
+    [SerializeField]
+    private GameObject gui;
+    private GameObject panel;
+    private GameObject button;
+
+    
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         uiElements = new List<GameObject>();
     }
+
+
     //Test method to make a blue square in the gui
-    public void CreateSquare()
+    private void CreateSquare()
     {
+        panel = FindObjectOfType<BuildUIPrefabs>().GetPanelPrefab();
         GameObject square = Instantiate(panel, gui.transform);
         square.transform.SetParent(gui.transform);
         square.transform.localScale = new Vector3(.2f, .2f, .2f);
@@ -29,8 +34,8 @@ public class FactoryBuildingHandler : MonoBehaviour
         {
             i.color = Color.blue;
         }
-        square.SetActive(false);
         uiElements.Add(square);
+        square.SetActive(false);
     }
 
     public List<GameObject> GetUIElements()
@@ -42,6 +47,7 @@ public class FactoryBuildingHandler : MonoBehaviour
     {
         gui = g;
         CreateSquare(); //The elements don't need to be created here if no reference to the gui is used in their creation
+        ActivateElements(); //Test line
     }
 
     //Activate elements should be called on select and deactivate on deselect. Only if it's the only thing selected however.
