@@ -111,11 +111,9 @@ public class UnitGroup
     public List<Unit> associatedUnits = new List<Unit>(); //first object is leader, lower index means higher priority
     public PathRequest pathfindingData;
 
-    public Vector2 groupPosition;
-
     public Vector2 targetPosition;
 
-
+    private List<Vector2> unitPositions = new List<Vector2>();
 
     public UnitGroup()
     {
@@ -131,19 +129,15 @@ public class UnitGroup
     public void UpdatePathfinding()
     {
         //TODO Detect if the new target requires a total recalculation
-        pathfindingData = PathfindingManager.INSTANCE.flowFieldHandler.requestPath(groupPosition/10, targetPosition/10); //replace the magic numbers with the spacing constant in Grid R
-    }
-
-    public void calculateGroupPosition()
-    {
-        groupPosition = Vector2.zero;
+        unitPositions.Clear();
         foreach(Unit u in associatedUnits)
         {
-            Vector2 unitPos = new Vector2(u.transform.position.x, u.transform.position.z);
-            groupPosition += unitPos;
+            unitPositions.Add(new Vector2(u.transform.position.x, u.transform.position.z)/10);
         }
-        groupPosition /= associatedUnits.Count;
+        pathfindingData = PathfindingManager.INSTANCE.flowFieldHandler.requestPath(unitPositions, targetPosition/10); //replace the magic numbers with the spacing constant in Grid R
     }
+
+
 
     public void AddUnit(Unit u)
     {

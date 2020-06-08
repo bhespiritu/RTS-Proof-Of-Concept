@@ -96,8 +96,7 @@ public class MoveOp : IAction
             {
                 group.AddUnit(u);
             }
-
-            group.calculateGroupPosition();
+            
         } 
         group.targetPosition = targetPosition;
         group.UpdatePathfinding();

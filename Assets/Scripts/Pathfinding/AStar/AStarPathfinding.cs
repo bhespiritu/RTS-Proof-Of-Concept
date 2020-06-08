@@ -24,12 +24,13 @@ public class AStarPathfinding
         neighbors = new List<AStarNode>();
     }
 
-    public bool calculatePath(NodeData d, AStarNode start, AStarNode last)
+
+    public bool calculatePath(NodeData d, AStarNode start, AStarNode last, bool reset = false)
     {
         path.Clear();
         openSet.Clear();
         closedSet.Clear();
-        d.resetNodes();
+        d.resetNodes(!reset);
 
         Vector2 target = last.getPosition();
 
@@ -69,7 +70,8 @@ public class AStarPathfinding
             {
                 if (!closedSet.Contains(neighbor))
                 {
-                    float newCost = node.gCost + 1;
+                    float newCost = node.gCost + (node.visited ? 1 : 2);
+                    node.visited = true;
                     if (newCost < neighbor.gCost || !openSet.Contains(neighbor))
                     {
                         neighbor.gCost = newCost;
@@ -104,6 +106,8 @@ public abstract class AStarNode
     public float gCost = 0;
     public float hCost = 0;
 
+    public bool visited = false;
+
     public float fCost
     {
         get
@@ -116,6 +120,6 @@ public abstract class AStarNode
 
 public abstract class NodeData
 {
-    public abstract void resetNodes();
+    public abstract void resetNodes(bool light = false);
     public abstract void getNeighbors(AStarNode node, ref List<AStarNode> neighbors);
 }

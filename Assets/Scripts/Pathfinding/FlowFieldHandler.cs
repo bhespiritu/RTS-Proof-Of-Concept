@@ -54,9 +54,25 @@ public class FlowFieldHandler : MonoBehaviour
 
     public PathRequest requestPath(Vector2 start, Vector2 end)
     {
+        return calcPath(start, end, true);
+    }
+
+    public PathRequest requestPath(List<Vector2> starts, Vector2 end)
+    {
+        PathRequest output = calcPath(starts[0], end, true);
+        for(int i = 1; i < starts.Count; i++)
+        {
+            calcPath(starts[i], end, false, output);
+        }
+
+        return output;
+    }
+
+    public PathRequest calcPath(Vector2 start, Vector2 end, bool reset = false, PathRequest appendTarget = null )
+    {
         //TODO generating portal maps
 
-        PathRequest request = new PathRequest(grid.getSpacing());
+        PathRequest request = (appendTarget == null) ? new PathRequest(grid.getSpacing()) : appendTarget;
 
         int startChunkX = (int)(start.x / mapSize);
         int startChunkY = (int)(start.y / mapSize);
@@ -73,10 +89,10 @@ public class FlowFieldHandler : MonoBehaviour
 
         PortalGraph.PortalNode startNode = null;
         PortalGraph.PortalNode endNode = null;
-        
+
 
         //TODO add an index to the MapDataChunk that stores the index of which portal each square has access to.
-        foreach(int i in navGraph.associatedNodes[startChunkX, startChunkY])
+        foreach (int i in navGraph.associatedNodes[startChunkX, startChunkY])
         {
             PortalGraph.PortalNode testNode = navGraph.nodes[i];
             int nodeX;
@@ -94,7 +110,7 @@ public class FlowFieldHandler : MonoBehaviour
             }
 
             var mapChunk = mapData[startChunkX, startChunkY];
-            if (pathfinding.calculatePath(mapChunk, mapChunk.AStarGrid[startX, startY], mapChunk.AStarGrid[nodeX, nodeY]))
+            if (pathfinding.calculatePath(mapChunk, mapChunk.AStarGrid[startX, startY], mapChunk.AStarGrid[nodeX, nodeY], true))
             {
                 startNode = testNode;
                 break;
@@ -119,7 +135,7 @@ public class FlowFieldHandler : MonoBehaviour
             }
 
             var mapChunk = mapData[endChunkX, endChunkY];
-            if (pathfinding.calculatePath(mapChunk, mapChunk.AStarGrid[endX, endY], mapChunk.AStarGrid[nodeX, nodeY]))
+            if (pathfinding.calculatePath(mapChunk, mapChunk.AStarGrid[endX, endY], mapChunk.AStarGrid[nodeX, nodeY], true))
             {
                 endNode = testNode;
                 break;
@@ -134,41 +150,43 @@ public class FlowFieldHandler : MonoBehaviour
         {
             Debug.LogError("Requested Destination is inaccessible");
         }
-        
-        pathfinding.calculatePath(navGraph, startNode, endNode);
+
+        pathfinding.calculatePath(navGraph, startNode, endNode, reset);
         List<AStarNode> path = pathfinding.path;
 
-        FlowGrid finalGrid = new FlowGrid();
+        FlowGrid finalGrid;
+        Vector2Int pos = new Vector2Int(endChunkX, endChunkY);
+
+        finalGrid = (!request.chunkSteps.ContainsKey(pos)) ? new FlowGrid() : request.chunkSteps[pos];
         finalGrid.integrationField[(int)(end.x % FlowGrid.gridResolution), (int)(end.y % FlowGrid.gridResolution)] = 0;
         finalGrid.dirtySquares.Add(new Vector2Int((int)(end.x % FlowGrid.gridResolution), (int)(end.y % FlowGrid.gridResolution)));
         finalGrid.chunkX = endChunkX;
         finalGrid.chunkY = endChunkY;
         finalGrid.compute();
-        request.chunkSteps.Add(new Vector2Int(endChunkX, endChunkY), finalGrid);
+        if (!request.chunkSteps.ContainsKey(pos))
+            request.chunkSteps.Add(pos, finalGrid);
+        else
+            request.chunkSteps[pos] = finalGrid;
 
-        
+
+
+
         FlowGrid lastGrid = finalGrid;
         for (int i = 1; i < path.Count; i++)//trace from the end to the start
         {
-            PortalGraph.PortalNode last = (PortalGraph.PortalNode) path[i-1];
-            PortalGraph.PortalNode current = (PortalGraph.PortalNode) path[i];
+            PortalGraph.PortalNode last = (PortalGraph.PortalNode)path[i - 1];
+            PortalGraph.PortalNode current = (PortalGraph.PortalNode)path[i];
 
             Vector2Int portalIndex = new Vector2Int(last.portalX, last.portalY);
-            
-            if(last.gridX != current.gridX || last.gridY != current.gridY)
+
+            if (last.gridX != current.gridX || last.gridY != current.gridY)
             {
                 FlowGrid newGrid;
                 bool hasVisited = request.chunkSteps.ContainsKey(new Vector2Int(current.gridX, current.gridY));
-                if (!hasVisited)
-                {
-                    newGrid = new FlowGrid();
-                } else
-                {
-                    newGrid = request.chunkSteps[new Vector2Int(current.gridX, current.gridY)];
-                }
+                newGrid = hasVisited ? request.chunkSteps[new Vector2Int(current.gridX, current.gridY)] : new FlowGrid();
 
-                
-                
+
+
                 newGrid.chunkX = current.gridX;
                 newGrid.chunkY = current.gridY;
                 if (last.isHorizontal)
@@ -207,15 +225,16 @@ public class FlowFieldHandler : MonoBehaviour
                     int xIndex = !last.side ? 0 : FlowGrid.gridResolution - 1;
                     for (int j = 0; j < last.size; j++)
                     {
-                        newGrid.directionField[xIndex, last.startIndex + j] = last.side ? 2 : 6; 
+                        newGrid.directionField[xIndex, last.startIndex + j] = last.side ? 2 : 6;
                     }
                 }
 
-                    
-                if(!hasVisited)
+                if (!hasVisited)
                     request.chunkSteps.Add(new Vector2Int(current.gridX, current.gridY), newGrid);
+                else
+                    request.chunkSteps[new Vector2Int(current.gridX, current.gridY)] = newGrid;
                 lastGrid = newGrid;
-                
+
             }
         }
 
@@ -631,13 +650,17 @@ public class PortalGraph : NodeData
         }
     }
 
-    public override void resetNodes()
+    public override void resetNodes(bool light = false)
     {
         foreach(PortalNode node in nodes)
         {
             node.gCost = 0;
             node.hCost = 0;
             node.parent = null;
+            if (!light)
+            {
+                node.visited = false;
+            }
         }
     }
 }
@@ -891,16 +914,21 @@ public class GridDataChunk : NodeData
     }
 
 
-    public override void resetNodes()
+    public override void resetNodes(bool light = false)
     {
         for (int i = 0; i < gridResolution; i++)
         {
             for (int j = 0; j < gridResolution; j++)
             {
                 FlowGridNode node = AStarGrid[i, j];
+                
                 node.gCost = 0;
                 node.hCost = 0;
                 node.parent = null;
+                if (!light)
+                {
+                    node.visited = false;
+                }
             }
         }
     }

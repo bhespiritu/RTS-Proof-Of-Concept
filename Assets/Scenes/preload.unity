@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 2010936530}
   - component: {fileID: 2010936529}
   m_Layer: 0
-  m_Name: RoundTimeManager
+  m_Name: RoundManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b3f752eb0d0d3148bc592f9c138077d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPaused: 1
+  isPaused: 0
 --- !u!4 &2010936530
 Transform:
   m_ObjectHideFlags: 0
