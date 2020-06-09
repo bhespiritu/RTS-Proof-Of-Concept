@@ -11,7 +11,8 @@ public class FactoryBuildingHandler : MonoBehaviour
     [SerializeField]
     private GameObject gui;
     private GameObject panel;
-    private GameObject button;
+    private GameObject buttonPrefab;
+    private Selectable selectable;
 
     
 
@@ -19,9 +20,20 @@ public class FactoryBuildingHandler : MonoBehaviour
     void Awake()
     {
         uiElements = new List<GameObject>();
+        selectable = gameObject.GetComponent<Selectable>();
+        selectable.OnSelect += ActivateElements;
+        selectable.OnDeselect += DeactivateElements;
     }
 
-
+    private void CreateButton()
+    {
+        buttonPrefab = FindObjectOfType<BuildUIPrefabs>().GetButtonPrefab();
+        GameObject button = Instantiate(buttonPrefab, gui.transform);
+        button.transform.localScale = new Vector3(1f, 1f, 1f);
+        button.transform.localPosition = gui.transform.localPosition + new Vector3(-940, -1000);
+        uiElements.Add(button);
+        button.SetActive(false);
+    }
     //Test method to make a blue square in the gui
     private void CreateSquare()
     {
@@ -47,6 +59,7 @@ public class FactoryBuildingHandler : MonoBehaviour
     {
         gui = g;
         CreateSquare(); //The elements don't need to be created here if no reference to the gui is used in their creation
+        CreateButton();
         ActivateElements(); //Test line
     }
 
