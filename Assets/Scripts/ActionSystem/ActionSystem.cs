@@ -89,14 +89,20 @@ public class MoveOp : IAction
             if (group != targetUnits[i].associatedPathfindingGroup) needsNewGroup = true;
         }
 
-        if(group == null || needsNewGroup)
+        if(group != null)
+        {
+            needsNewGroup = (targets.Length != group.associatedUnits.Count);
+        } else
+        {
+            needsNewGroup = true;
+        }
+        if(needsNewGroup)
         {
             group = PathfindingManager.INSTANCE.formGroup();
             foreach(Unit u in targetUnits)
             {
                 group.AddUnit(u);
             }
-            
         } 
         group.targetPosition = targetPosition;
         group.UpdatePathfinding();
