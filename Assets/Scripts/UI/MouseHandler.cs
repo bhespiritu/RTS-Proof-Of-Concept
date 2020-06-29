@@ -6,7 +6,12 @@ using UnityEngine.EventSystems;
 using System;
 
 /*
-* TODO Make a method to check if the mouse is over a UI element
+* TODO:
+* Make a method to check if the mouse is over a UI element
+* Make selection only happen during selection mode
+* Selection circle shows up under the list of objects in the cursors transfrom. This messes up the mesh changing. 
+*   The cursor needs to make a list of what objects it wants to change the mesh of. Or to ignore the circle
+*   Preferably the selection object shouldn't be added to cursor at all, as it won't be added when not in selection mode.
 */
 public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
@@ -23,7 +28,7 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public LayerMask selectionMask;
 
     public GameObject selectionPrefab;
-
+    
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -94,6 +99,9 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        MouseMode mouse = GetMouseMode();
+        Debug.Log(mouse);
+
         if (eventData.button == PointerEventData.InputButton.Left)
         {
             HandleLeftClick(eventData);
@@ -141,6 +149,8 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     private void HandleLeftClick(PointerEventData eventData)
     {
+        Debug.Log(mouseMode);
+
         switch (mouseMode)
         {
             case MouseMode.Select:
@@ -163,6 +173,7 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                 }
             case MouseMode.Placement:
                 {
+                    
                     break;
                 }
         }
@@ -207,7 +218,6 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     private void Update()
     {
-
         switch (mouseMode)
         {
             case (MouseMode.Placement):
@@ -274,16 +284,14 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                     localForward = temp;
                     cursor.transform.forward = localForward;
                 }
-
-
-                if (Input.GetMouseButtonDown(0))
-                {
+                if (Input.GetKeyDown(KeyCode.Mouse0)){
                     //Replace the raycast with the ability to detect if the mouse is over a ui element
                     if (bldPlacer.checkPosition(cursor) && Physics.Raycast(ray, out hitInfo, Mathf.Infinity, placementLayerMask))
                     {
                         bldPlacer.PlaceBuildingNear(cursor);
                     }
                 }
+
                 break;
         }
     }
