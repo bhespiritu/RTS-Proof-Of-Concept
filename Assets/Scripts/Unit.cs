@@ -10,6 +10,7 @@ public class Unit : MonoBehaviour
 
     [Header("General Attributes")]
     public string name;
+    public uint team;
     public int health;
     public int healthregen;
     public static float moveSpeed;
@@ -35,7 +36,7 @@ public class Unit : MonoBehaviour
 
     // Weapon information, need this for each weapon
     [Header("Weapon Attributes")]
-    public float projectileDmg;
+    public int projectileDmg;
     public float projectileSpd;
     public int projectileHeat;
     public float tolerance;
@@ -47,22 +48,24 @@ public class Unit : MonoBehaviour
     [HideInInspector]
     public UnitGroup associatedPathfindingGroup;
 
+
+    
+
     // Start is called before the first frame update
     void Start()
     {
         //REMOVE LATER
         if (uID == ulong.MaxValue) UnitManager.INSTANCE.AddUnit(this);
+
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
+
+    
 
     //I'm going to start adding things I think we need. Feel free to correct 
     //@Author Roger Clanton
-    void takeDamage(int dmg){
+    public void takeDamage(int dmg){
         health -= dmg/armor;
         if (health <= 0){
             unitDeath();

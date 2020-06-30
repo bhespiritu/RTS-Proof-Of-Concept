@@ -30,7 +30,7 @@ public class FactoryBuildingHandler : MonoBehaviour
         buttonPrefab = FindObjectOfType<BuildUIPrefabs>().GetButtonPrefab();
         GameObject button = Instantiate(buttonPrefab, gui.transform);
         button.transform.localScale = new Vector3(1f, 1f, 1f);
-        button.transform.localPosition = gui.transform.localPosition + new Vector3(-940, -1000);
+        //button.transform.localPosition = new Vector2();
         uiElements.Add(button);
         button.SetActive(false);
     }
@@ -41,7 +41,7 @@ public class FactoryBuildingHandler : MonoBehaviour
         GameObject square = Instantiate(panel, gui.transform);
         square.transform.SetParent(gui.transform);
         square.transform.localScale = new Vector3(.2f, .2f, .2f);
-        square.transform.localPosition = gui.transform.localPosition + new Vector3(-940, -1000);
+        //square.transform.localPosition = gui.transform.localPosition + new Vector3(-940, 0);
         if (square.TryGetComponent<Image>(out Image i))
         {
             i.color = Color.blue;
