@@ -19,6 +19,8 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     Image selectionImage;
     Vector2 clickStart;
 
+    public GameObject movePopup;
+
     Rect selectRect;
 
     public MouseMode mouseMode = MouseMode.Select;//TODO change behaviour based on mode.
@@ -126,6 +128,8 @@ public class MouseHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                     {
                         Vector3 target = clickCast.point;
                         Vector2 pathTarget = new Vector2(target.x, target.z);
+
+                        Instantiate(movePopup, target, Quaternion.identity);
 
                         MoveOp action = new MoveOp();
 
